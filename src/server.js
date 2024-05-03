@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
-import { PORT, URI } from "./config/index.js";
+import { PORT, MONGODB_URI } from "./config/index.js";
 import App from "./routes/index.js";
 
 const server = express();
@@ -18,9 +18,9 @@ server.use(express.json());
 mongoose.promise = global.Promise;
 mongoose.set("strictQuery", false);
 mongoose
-    .connect(URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+    .connect(MONGODB_URI, {
+        // useNewUrlParser: true,
+        // useUnifiedTopology: true,
     })
     .then(console.log("Connected to database"))
     .catch((err) => console.log(err));
