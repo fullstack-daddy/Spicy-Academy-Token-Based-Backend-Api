@@ -12,7 +12,7 @@ server.use(cors());
 server.disable("x-powered-by"); //Reduce fingerprinting
 server.use(cookieParser());
 server.use(express.urlencoded({ extended: false }));
-server.use(express.json());
+server.use(express.json({ strict: false }));
 
 // Set up mongoose's promise to global promise
 mongoose.promise = global.Promise;

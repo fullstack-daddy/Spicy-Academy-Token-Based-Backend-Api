@@ -1,4 +1,5 @@
-import express from 'express';
+import express from "express";
+import Auth from "./auth.js";
 
 const app = express();
 
@@ -9,16 +10,18 @@ app.disable("x-powered-by");
 app.get("/", (req, res) => {
   try {
     res.status(200).json({
-        status: "success",
-        data: [],
-        message: "Welcome to the home route"
-    })
+      status: "success",
+      data: [],
+      message: "Welcome to the home route",
+    });
   } catch (error) {
     res.status(500).json({
-        status: "error",
-        message: "Internal Server Error"
-    })
+      status: "error",
+      message: "Internal Server Error",
+    });
   }
 });
 
-export default app
+app.use("/auth", Auth);
+
+export default app;
