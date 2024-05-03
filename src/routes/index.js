@@ -1,6 +1,7 @@
 import express from "express";
 import Auth from "./auth.js";
 import { Verify, VerifyRole } from "../middleware/verify.js";
+import { Logout } from "../controllers/auth.js";
 
 const app = express();
 
@@ -42,6 +43,8 @@ app.get("/admin", Verify, VerifyRole, (req, res) => {
       message: "Welcome to the Admin portal!",
   });
 });
+
+app.get('/logout', Logout);
 
 app.use("/auth", Auth);
 
