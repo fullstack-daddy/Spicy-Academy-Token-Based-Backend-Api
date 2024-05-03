@@ -21,7 +21,7 @@ export async function Register(req, res) {
         message: "It seems you already have an account, please log in instead.",
       });
     const savedUser = await newUser.save(); // save new user into the database
-    const { password, role, ...user_data } = savedUser;
+    const { role, ...user_data } = savedUser;
     res.status(200).json({
       status: "success",
       data: [user_data],
@@ -33,7 +33,7 @@ export async function Register(req, res) {
       status: "error",
       code: 500,
       data: [],
-      message: "Internal Server Error",
+      message: `${err.message}`,
     });
   }
   res.end();
@@ -129,7 +129,7 @@ export async function Login(req, res) {
           status: "error",
           code: 500,
           data: [],
-          message: "Internal Server Error",
+          message: `${err.message}`,
       });
   }
   res.end();

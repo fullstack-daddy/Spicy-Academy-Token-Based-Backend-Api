@@ -1,5 +1,6 @@
 import express from "express";
 import Auth from "./auth.js";
+import { Verify, VerifyRole } from "../middleware/verify.js";
 
 const app = express();
 
@@ -20,6 +21,26 @@ app.get("/", (req, res) => {
       message: "Internal Server Error",
     });
   }
+});
+
+app.get("/user", Verify, (req, res) => {
+  try {
+    res.status(200).json({
+      status: "success",
+      message: "Welcome to the your Dashboard!",
+    });
+  } catch (error) {
+    res.status(500).json({ status: "error",
+      message: `${error.message}`,
+     });
+  }
+});
+
+app.get("/admin", Verify, VerifyRole, (req, res) => {
+  res.status(200).json({
+      status: "success",
+      message: "Welcome to the Admin portal!",
+  });
 });
 
 app.use("/auth", Auth);
