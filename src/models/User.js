@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema(
       required: true,
       default: "0x01",
     },
+    googleId: {
+      type: String,
+      unique: true,
+    }
   },
   { timestamps: true }
 );

@@ -1,7 +1,12 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import Blacklist from "../models/Blacklist.js";
-
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import mongoose from 'mongoose';
+import findOrCreate from 'mongoose-findorcreate';
+// import NextAuth from "next-auth";
+// import GoogleProvider from 'next-auth/providers/google'
 export async function Register(req, res) {
   // get required variables from request body
   const { firstName, lastName, email, password } = req.body;
@@ -89,6 +94,87 @@ export async function Login(req, res) {
   }
   res.end();
 }
+
+export async function signInWithGoogle(){
+  try {
+    passport.serializeUser(function(user, done) {
+      done(null, user.id);
+    });
+    passport.deserializeUser(function(id, done) {
+      User.findById(id, function(err, user) {
+        done(err, user);
+      });
+    });
+
+    const UserSchema = new mongoose.Schema ({
+      googleId: String
+    });
+    
+    UserSchema.plugin(findOrCreate);
+    const User = mongoose.model("User", UserSchema);
+    passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "http://localhost:3000/api/auth/callback/google",
+        // userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+      },
+      function(accessToken, refreshToken, profile, cb) {
+        console.log(profile);
+        User.findOrCreate({ googleId: profile.id }, function (err, user) {
+          return cb(err, user);
+        });
+      }
+    ));
+  } catch (error) {
+    console.error("An error occurred:", error);
+  }
+}
+// export const { auth, signIn, signOut, handlers: { GET, POST } } = NextAuth({
+//   providers: [
+//     GoogleProvider({
+//       clientId: process.env.GOOGLE_CLIENT_ID,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//     }),
+//   ],
+//   callbacks: {
+//     async session({ session }) {
+//       // store the user id from MongoDB to session
+//       const sessionUser = await User.findOne({ email: session.user.email });
+//       session.user.id = sessionUser._id.toString();
+
+//       return session;
+//     },
+//     async signIn({ account, profile, user, credentials }) {
+//       try {
+//         await connectToDB();
+
+//         // check if user already exists
+//         const userExists = await User.findOne({ email: profile.email });
+
+//         // if not, create a new document and save user in MongoDB
+//         if (!userExists) {
+//           await User.create({
+//             email: profile.email,
+//             firstName: profile.firstName,
+//             lastName: profile.lastName,
+//             username: profile.name.replace(" ", "").toLowerCase(),
+//             image: profile.picture,
+//           });
+//         }
+
+//         return true;
+//       } catch (error) {
+//         console.log("Error checking if user exists: ", error.message);
+//         return false;
+//       }
+//     },
+//   },
+// });
+
+// export { googleAuthHandler as GET, googleAuthHandler as POST };
+// export { googleAuthHandler };
+
+
 
 export async function Logout(req, res) {
   try {
