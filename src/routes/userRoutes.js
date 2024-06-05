@@ -6,7 +6,7 @@ import {
   getAllAdmins,
   getAllUsers,
   deleteAdmin,
-  deleteUser,
+  deleteStudent,
 } from "../controllers/userController.js";
 import { refreshToken } from "../middleware/authMiddleware.js";
 
@@ -40,7 +40,7 @@ router.delete(
   "/deleteUser/:userId",
   authMiddleware,
   roleMiddleware(["admin"]),
-  deleteUser
+  deleteStudent
 );
 
 export default router;

@@ -1,12 +1,14 @@
 // userController.js
 
-import User from "../models/studentModel.js";
+import Student from "../models/studentModel.js";
+import Admin from "../models/studentModel.js";
+import superAdmin from "../models/studentModel.js";
 
 // Get all students
 export const getAllStudents = async (req, res) => {
   try {
     // Find all users with the role of 'student'
-    const allStudents = await User.find({ role: "student" });
+    const allStudents = await Student.find({ role: "student" });
 
     // Respond with the retrieved students
     res.status(200).json(allStudents);
@@ -20,7 +22,7 @@ export const getAllStudents = async (req, res) => {
 export const getAllAdmins = async (req, res) => {
   try {
     // Find all users with the role of 'admin'
-    const allAdmins = await User.find({ role: "admin" });
+    const allAdmins = await Admin.find({ role: "admin" });
 
     // Respond with the retrieved admins
     res.status(200).json(allAdmins);
@@ -33,11 +35,17 @@ export const getAllAdmins = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    // Find all users
-    const allUsers = await User.find();
+    // Find all users in the userModel
+    const allStudent = await userModel.find();
+
+    // Find all users in the adminModel
+    const allAdmins = await adminModel.find();
+
+    // Combine the results
+    const allStudentAndAdmins = [...allStudent, ...allAdmins];
 
     // Respond with the retrieved users
-    res.status(200).json(allUsers);
+    res.status(200).json(allStudentAndAdmins);
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
@@ -51,7 +59,7 @@ export const deleteAdmin = async (req, res) => {
     const { superadminId } = req.user;
 
     // Find the superadmin
-    const superadmin = await User.findOne({ superadminId, role: "superadmin" });
+    const superadmin = await superAdmin.findOne({ superadminId, role: "superadmin" });
 
     if (!superadmin) {
       // If the requesting user is not a superadmin, respond with a 403 status and a message
@@ -61,7 +69,7 @@ export const deleteAdmin = async (req, res) => {
     }
 
     // Find the admin by ID and role
-    const admin = await User.findOne({ adminId, role: "admin" });
+    const admin = await Admin.findOne({ adminId, role: "admin" });
 
     if (!admin) {
       // If the admin is not found, respond with a 404 status and a message
@@ -69,7 +77,7 @@ export const deleteAdmin = async (req, res) => {
     }
 
     // Delete the admin from the database
-    await User.findOneAndDelete({ adminId, role: "admin" });
+    await Admin.findOneAndDelete({ adminId, role: "admin" });
 
     // Respond with a success message
     res.status(200).json({ message: "Admin deleted successfully" });
@@ -81,7 +89,7 @@ export const deleteAdmin = async (req, res) => {
 };
 
 // Delete a Student
-export const deleteUser = async (req, res) => {
+export const deleteStudent = async (req, res) => {
   try {
     const { studentId } = req.params;
 
