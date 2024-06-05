@@ -36,12 +36,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: "Your password is required",
       select: false,
-      max: 25,
     },
     role: {
       type: String,
-      required: false,
-      enum: ["superadmin"],
       default: "superadmin",
     },
     googleId: {
@@ -53,17 +50,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Pre-save hook to handle role and password
-userSchema.pre('save', function (next) {
+// Pre-save hook to handle password hashing
+userSchema.pre("save", function (next) {
   const user = this;
 
-  // Convert role to lowercase
-  if (user.role) {
-    user.role = user.role.toLowerCase();
-  }
-
   // If password is not modified, skip hashing
-  if (!user.isModified('password')) {
+  if (!user.isModified("password")) {
     return next();
   }
 
@@ -79,4 +71,5 @@ userSchema.pre('save', function (next) {
     });
   });
 });
+
 export default mongoose.model("Spicy_Superadmin", userSchema);

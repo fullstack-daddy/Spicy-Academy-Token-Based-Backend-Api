@@ -31,16 +31,13 @@ export const studentSignup = async (req, res) => {
       return res.status(400).send("The OTP is not valid");
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     // Create a new student with hashed password
     const newStudent = new Student({
       username,
       email,
       firstName,
       lastName,
-      password: hashedPassword,
+      password,
       role,
     });
 
@@ -86,16 +83,13 @@ export const adminSignup = async (req, res) => {
       return res.status(400).send("The OTP is not valid");
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     // Create a new user with hashed password
     const newAdmin = new Admin({
       username,
       email,
       firstName,
       lastName,
-      password: hashedPassword,
+      password,
       role,
     });
 
@@ -141,16 +135,13 @@ export const superAdminSignup = async (req, res) => {
       return res.status(400).send("The OTP is not valid");
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     // Create a new user with hashed password
     const newSuperAdmin = new superAdmin({
       username,
       email,
       firstName,
       lastName,
-      password: hashedPassword,
+      password,
       role,
     });
 
@@ -191,7 +182,7 @@ export const studentLogin = async (req, res) => {
     }
 
     // Check if the password matches
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, student.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -231,7 +222,7 @@ export const adminLogin = async (req, res) => {
     }
 
     // Check if the password matches
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -264,33 +255,33 @@ export const superAdminLogin = async (req, res) => {
     const { email, password } = req.body;
 
     // Check if the superAdmin exists
-    const superAdmin = await superAdmin.findOne({ email }).select("+password");
+    const super_Admin = await superAdmin.findOne({ email }).select("+password");
 
-    if (!superAdmin) {
+    if (!super_Admin) {
       return res.status(400).json({ message: "User not found" });
     }
 
     // Check if the password matches
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, super_Admin.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     // Generate JWT tokens
-    const accessToken = generateAccessToken(superAdmin);
-    const refreshToken = generateRefreshToken(superAdmin);
+    const accessToken = generateAccessToken(super_Admin);
+    const refreshToken = generateRefreshToken(super_Admin);
 
     res.status(200).json({
       message: "Logged in successfully",
       accessToken,
       refreshToken,
       superAdmin_Details: {
-        superAdminId: superAdmin.superAdminId,
-        username: superAdmin.username,
-        email: superAdmin.email,
-        firstName: superAdmin.firstName,
-        lastName: superAdmin.lastName,
-        role: superAdmin.role,
+        superAdminId: super_Admin.superAdminId,
+        username: super_Admin.username,
+        email: super_Admin.email,
+        firstName: super_Admin.firstName,
+        lastName: super_Admin.lastName,
+        role: super_Admin.role,
       },
     });
   } catch (error) {
