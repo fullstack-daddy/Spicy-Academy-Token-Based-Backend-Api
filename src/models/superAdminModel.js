@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { SECRET_ACCESS_TOKEN } from "../config/index.js";
+import { v4 as uuidv4 } from "uuid";
 
-const UserSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
+    superAdminId: {
+      type: String,
+      default: uuidv4,
+      unique: true,
+    },
     firstName: {
       type: String,
       required: "Your firstname is required",
@@ -13,6 +17,12 @@ const UserSchema = new mongoose.Schema(
     lastName: {
       type: String,
       required: "Your lastname is required",
+      max: 25,
+    },
+    username: {
+      type: String,
+      required: "Enter a unique username",
+      unique: true,
       max: 25,
     },
     email: {
@@ -30,21 +40,34 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      required: true,
-      default: "0x01",
+      required: false,
+      enum: ["superadmin"],
+      default: "superadmin",
     },
     googleId: {
       type: String,
-      unique: true,
-    }
+      unique: false,
+      required: false,
+    },
   },
   { timestamps: true }
 );
 
-UserSchema.pre("save", function (next) {
+// Pre-save hook to handle role and password
+userSchema.pre('save', function (next) {
   const user = this;
 
-  if (!user.isModified("password")) return next();
+  // Convert role to lowercase
+  if (user.role) {
+    user.role = user.role.toLowerCase();
+  }
+
+  // If password is not modified, skip hashing
+  if (!user.isModified('password')) {
+    return next();
+  }
+
+  // Generate salt and hash the password
   bcrypt.genSalt(10, (err, salt) => {
     if (err) return next(err);
 
@@ -56,14 +79,4 @@ UserSchema.pre("save", function (next) {
     });
   });
 });
-
-UserSchema.methods.generateAccessJWT = function () {
-  let payload = {
-    id: this._id,
-  };
-  return jwt.sign(payload, SECRET_ACCESS_TOKEN, {
-    expiresIn: "20m",
-  });
-};
-
-export default mongoose.model("users", UserSchema);
+export default mongoose.model("Spicy_Superadmin", userSchema);
