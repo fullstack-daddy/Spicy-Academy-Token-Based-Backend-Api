@@ -1,8 +1,8 @@
 const roleMiddleware = (roles) => async (req, res, next) => {
   try {
     const userRole = req.user.role;
-    console.log("User Role:", userRole);
-    console.log("Request User:", req.user); // Log the entire req.user object
+    // console.log("User Role:", userRole);
+    // console.log("Request User:", req.user); // Log the entire req.user object
 
     if (!userRole) {
       console.error("User role not found in request");

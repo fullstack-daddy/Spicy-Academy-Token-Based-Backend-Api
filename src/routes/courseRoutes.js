@@ -10,56 +10,60 @@ import {
   deleteFreeCourse,
   deleteShopperCourse,
 } from "../controllers/courseController.js";
-import { isAuthenticated, authorize } from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+import { refreshToken, authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post(
-  "/addFreeCourse",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  "/getAdminFreeCourses",
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   addFreeCourse
 );
 router.post(
-  "/addShopperCourse",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  "/getAdminShopperCourses",
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   addShopperCourse
 );
 router.get(
   "/freeCourses",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   getAdminFreeCourses
 );
 router.get(
   "/shopperCourses",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   getAdminShopperCourses
 );
 router.put(
   "/updateAdminFreeCourse/:freeCourseId",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   updateAdminFreeCourse
 );
 router.put(
   "/updateAdminShopperCourse/:shopperCourseId",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   updateAdminShopperCourse
 );
 router.delete(
   "/deleteFreeCourse/:freeCourseId",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   deleteFreeCourse
 );
 router.delete(
   "/deleteShopperCourse/:shopperCourseId",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   deleteShopperCourse
 );
 
