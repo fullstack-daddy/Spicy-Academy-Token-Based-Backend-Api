@@ -1,8 +1,8 @@
 // userController.js
 
 import Student from "../models/studentModel.js";
-import Admin from "../models/studentModel.js";
-import superAdmin from "../models/studentModel.js";
+import Admin from "../models/adminModel.js";
+import superAdmin from "../models/superAdminModel.js";
 
 // Get all students
 export const getAllStudents = async (req, res) => {
@@ -36,10 +36,10 @@ export const getAllAdmins = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     // Find all users in the userModel
-    const allStudent = await userModel.find();
+    const allStudent = await Student.find();
 
     // Find all users in the adminModel
-    const allAdmins = await adminModel.find();
+    const allAdmins = await Admin.find();
 
     // Combine the results
     const allStudentAndAdmins = [...allStudent, ...allAdmins];
@@ -94,7 +94,7 @@ export const deleteStudent = async (req, res) => {
     const { studentId } = req.params;
 
     // Find the user by ID
-    const user = await User.findOne({ studentId });
+    const user = await Student.findOne({ studentId });
 
     if (!user) {
       // If the user is not found, respond with a 404 status and a message
@@ -102,10 +102,10 @@ export const deleteStudent = async (req, res) => {
     }
 
     // Delete the user from the database
-    await User.findOneAndDelete({ studentId });
+    await Student.findOneAndDelete({ studentId });
 
     // Respond with a success message
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "Student deleted successfully" });
   } catch (error) {
     console.error("Error deleting user:", error);
     // Handle errors by responding with a 500 status and the error message

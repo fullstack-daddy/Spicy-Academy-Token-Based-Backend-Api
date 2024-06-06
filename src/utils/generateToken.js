@@ -5,18 +5,20 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 export const generateAccessToken = (user) => {
   const payload = {
-    id: user.userId,
-    email: user.email,
-    role: user.role,
+    studentId: user.studentId || undefined,
+    adminId: user.adminId || undefined,
+    superAdminId: user.superAdminId || undefined,
+    role: user.role
   };
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "30m" });
 };
 
 export const generateRefreshToken = (user) => {
   const payload = {
-    id: user.userId,
-    email: user.email,
-    role: user.role,
+    studentId: user.studentId || undefined,
+    adminId: user.adminId || undefined,
+    superAdminId: user.superAdminId || undefined,
+    role: user.role
   };
-  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: '6h' });
+  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "1d" });
 };

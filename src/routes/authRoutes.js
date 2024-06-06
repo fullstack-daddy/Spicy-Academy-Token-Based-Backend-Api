@@ -16,7 +16,7 @@ router.post("/studentLogin", studentLogin);
 router.post("/adminLogin", adminLogin);
 router.post("/superAdminLogin", superAdminLogin);
 router.get("/refreshToken", refreshToken);
-router.post("/logout", logout);
+router.get("/logout", logout);
 router.post("/studentSignup", studentSignup);
 router.post("/adminSignup", adminSignup);
 router.post("/superAdminSignup", superAdminSignup);

@@ -15,31 +15,35 @@ router.get(
   "/getAllStudents",
   refreshToken,
   authMiddleware,
-  roleMiddleware(["admin, superadmin"]),
+  roleMiddleware(["admin", "superadmin"]),
   getAllStudents
 );
 router.get(
   "/getAllAdmins",
+  refreshToken,
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["superadmin"]),
   getAllAdmins
 );
 router.get(
   "/getAllUsers",
+  refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
   getAllUsers
 );
 router.delete(
   "/deleteAdmin/:adminId",
+  refreshToken,
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["superadmin"]),
   deleteAdmin
 );
 router.delete(
-  "/deleteUser/:userId",
+  "/deleteStudent/:studentId",
+  refreshToken,
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "superadmin"]),
   deleteStudent
 );
 
