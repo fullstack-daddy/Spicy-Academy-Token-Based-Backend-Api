@@ -72,7 +72,7 @@ export const getAdminShopperCourses = async (req, res) => {
 };
 
 // Update a free course
-export const updateFreeCourse = async (req, res) => {
+export const updateAdminFreeCourse = async (req, res) => {
   try {
     const { freeCourseId } = req.params;
 
@@ -84,7 +84,7 @@ export const updateFreeCourse = async (req, res) => {
     }
 
     // Check if the authenticated user is the admin who created the course
-    if (freeCourse.adminId !== req.user.userId) {
+    if (freeCourse.adminId !== req.user.adminId) {
       return res.status(403).json({ message: "Not authorized to update this course" });
     }
 

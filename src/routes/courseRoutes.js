@@ -5,8 +5,8 @@ import {
   getAdminShopperCourses,
   addFreeCourse,
   addShopperCourse,
-  updateFreeCourse,
-  updateShopperCourse,
+  updateAdminFreeCourse,
+  updateAdminShopperCourse,
   deleteFreeCourse,
   deleteShopperCourse,
 } from "../controllers/courseController.js";
@@ -39,16 +39,16 @@ router.get(
   getAdminShopperCourses
 );
 router.put(
-  "/updateFreeCourse/:freeCourseId",
+  "/updateAdminFreeCourse/:freeCourseId",
   isAuthenticated,
   authorize(["admin", "superadmin"]),
-  updateFreeCourse
+  updateAdminFreeCourse
 );
 router.put(
-  "/updateShopperCourse/:shopperCourseId",
+  "/updateAdminShopperCourse/:shopperCourseId",
   isAuthenticated,
   authorize(["admin", "superadmin"]),
-  updateShopperCourse
+  updateAdminShopperCourse
 );
 router.delete(
   "/deleteFreeCourse/:freeCourseId",
