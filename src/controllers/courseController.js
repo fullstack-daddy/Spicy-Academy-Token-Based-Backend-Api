@@ -104,7 +104,7 @@ export const updateAdminFreeCourse = async (req, res) => {
 };
 
 // Update a shopper course
-export const updateShopperCourse = async (req, res) => {
+export const updateAdminShopperCourse = async (req, res) => {
   try {
     const { shopperCourseId } = req.params;
 
@@ -116,7 +116,7 @@ export const updateShopperCourse = async (req, res) => {
     }
 
     // Check if the authenticated user is the admin who created the course
-    if (shopperCourse.adminId !== req.user.userId) {
+    if (shopperCourse.adminId !== req.user.adminId) {
       return res.status(403).json({ message: "Not authorized to update this course" });
     }
 
@@ -148,7 +148,7 @@ export const deleteFreeCourse = async (req, res) => {
     }
 
     // Check if the authenticated user is the admin who created the course
-    if (deleteFreeCourse.adminId !== req.user.userId) {
+    if (deleteFreeCourse.adminId !== req.user.adminId) {
       return res.status(403).json({ message: "Not authorized to delete this course" });
     }
 
@@ -177,7 +177,7 @@ export const deleteShopperCourse = async (req, res) => {
     }
 
     // Check if the authenticated user is the admin who created the course
-    if (shopperCourse.adminId !== req.user.userId) {
+    if (shopperCourse.adminId !== req.user.adminId) {
       return res.status(403).json({ message: "Not authorized to delete this course" });
     }
 
