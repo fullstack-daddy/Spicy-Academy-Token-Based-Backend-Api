@@ -1,8 +1,8 @@
 // routes/courseRoutes.js
 import express from "express";
 import {
-  getFreeCourses,
-  getShopperCourses,
+  getAdminFreeCourses,
+  getAdminShopperCourses,
   addFreeCourse,
   addShopperCourse,
   updateFreeCourse,
@@ -30,13 +30,13 @@ router.get(
   "/freeCourses",
   isAuthenticated,
   authorize(["admin", "superadmin"]),
-  getFreeCourses
+  getAdminFreeCourses
 );
 router.get(
   "/shopperCourses",
   isAuthenticated,
   authorize(["admin", "superadmin"]),
-  getShopperCourses
+  getAdminShopperCourses
 );
 router.put(
   "/updateFreeCourse/:freeCourseId",

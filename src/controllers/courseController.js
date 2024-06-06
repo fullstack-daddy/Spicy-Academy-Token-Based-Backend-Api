@@ -43,11 +43,11 @@ export const addShopperCourse = async (req, res) => {
   }
 };
 
-// Retrieve all free courses for the authenticated user
-export const getFreeCourses = async (req, res) => {
+// Retrieve all free courses for the authenticated Admin
+export const getAdminFreeCourses = async (req, res) => {
   try {
     // Find all free courses created by the authenticated user
-    const freeCourses = await freeCourseModel.find({ adminId: req.user.userId });
+    const freeCourses = await freeCourseModel.find({ adminId: req.user.adminId });
     
     // Respond with the retrieved free courses
     res.status(200).send(freeCourses);
@@ -57,11 +57,11 @@ export const getFreeCourses = async (req, res) => {
   }
 };
 
-// Retrieve all shopper courses for the authenticated user
-export const getShopperCourses = async (req, res) => {
+// Retrieve all shopper courses for the authenticated Admin
+export const getAdminShopperCourses = async (req, res) => {
   try {
-    // Find all shopper courses created by the authenticated user
-    const shopperCourses = await shopperCourseModel.find({ adminId: req.user.userId });
+    // Find all shopper courses created by the authenticated Admin
+    const shopperCourses = await shopperCourseModel.find({ adminId: req.user.adminId });
     
     // Respond with the retrieved shopper courses
     res.status(200).send(shopperCourses);
