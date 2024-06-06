@@ -9,7 +9,7 @@ export const addFreeCourse = async (req, res) => {
     // Create a new FreeCourse object with the request body data and the admin ID from the authenticated user
     const newFreeCourse = new freeCourseModel({
       ...req.body,
-      adminId: req.user.userId,
+      adminId: req.user.adminId,
     });
 
     // Save the new free course to the database
@@ -29,7 +29,7 @@ export const addShopperCourse = async (req, res) => {
     // Create a new ShopperCourse object with the request body data and the admin ID from the authenticated user
     const newShopperCourse = new shopperCourseModel({
       ...req.body,
-      adminId: req.user.userId,
+      adminId: req.user.adminId,
     });
     
     // Save the new shopper course to the database
