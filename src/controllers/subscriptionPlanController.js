@@ -30,10 +30,10 @@ export const addSubscription = async (req, res) => {
 // Delete a subscription by ID
 export const deleteSubscription = async (req, res) => {
   try {
-    const { subscriptionId } = req.params;
+    const { subscriptionPlanId } = req.params;
 
     // Find the subscription by ID
-    const subscription = await subscriptionPlanModel.findOne({ subscriptionId });
+    const subscription = await subscriptionPlanModel.findOne({ subscriptionPlanId });
 
     if (!subscription) {
       // If the subscription is not found, respond with a 404 status and a message
