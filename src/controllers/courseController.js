@@ -16,7 +16,7 @@ export const addFreeCourse = async (req, res) => {
     const savedFreeCourse = await newFreeCourse.save();
     
     // Respond with the created free course data
-    res.status(201).json(savedFreeCourse);
+    res.status(201).json({message:"Course Created Successfully", savedFreeCourse});
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
