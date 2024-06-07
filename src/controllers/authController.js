@@ -93,7 +93,10 @@ export const adminSignup = async (req, res) => {
     if (response.length === 0 || otp !== response[0].otp) {
       return res.status(400).send("The OTP is not valid");
     }
-    
+
+    // Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create a new pending admin with the hashed password
     const newPendingAdmin = new pendingAdmin({
       email,
@@ -101,7 +104,7 @@ export const adminSignup = async (req, res) => {
       lastName,
       username,
       telephone,
-      password,
+      password: hashedPassword,
       role,
     });
 
@@ -386,7 +389,7 @@ export const onboardPendingAdmin = async (req, res) => {
     if (pendingAdminData.status === 'onboarded') {
       return res.status(400).json({ message: "Admin is already onboarded" });
     }
-
+    console.log(pendingAdminData)
     // Create a new admin document
     const newAdmin = new Admin({
       adminId: pendingAdminData.adminId,
@@ -397,15 +400,15 @@ export const onboardPendingAdmin = async (req, res) => {
       password: pendingAdminData.password, 
       username: pendingAdminData.username,
       role: pendingAdminData.role,
-      status: pendingAdminData.status,
+      status: "onboarded",
     });
 
     // Save the new admin
     const savedAdmin = await newAdmin.save();
 
     // Update the pending admin's status
-    pendingAdminData.status = 'onboarded';
-    const pendingAdminDataSaved= await pendingAdminData.save();
+    // pendingAdminData.status = 'onboarded';
+    // const pendingAdminDataSaved= await pendingAdminData.save();
 
     res.status(200).json({ 
       message: "Admin onboarded successfully", 
@@ -417,7 +420,7 @@ export const onboardPendingAdmin = async (req, res) => {
         telephone: savedAdmin.telephone,
         role: savedAdmin.role,
         password: savedAdmin.password,
-        status: pendingAdminDataSaved.status,
+        status: savedAdmin.status,
       } 
     });
   } catch (error) {

@@ -64,23 +64,23 @@ const userSchema = new mongoose.Schema(
 );
 
 // Pre-save hook to handle role and password
-userSchema.pre('save', function (next) {
-  const user = this;
+// userSchema.pre('save', function (next) {
+//   const user = this;
 
-  // If password is not modified, skip hashing
-  if (!user.isModified('password')) {
-    return next();
-  }
+//   // If password is not modified, skip hashing
+//   if (!user.isModified('password')) {
+//     return next();
+//   }
 
-  // Generate salt and hash the password
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) return next(err);
+//   // Generate salt and hash the password
+//   bcrypt.genSalt(10, (err, salt) => {
+//     if (err) return next(err);
 
-    bcrypt.hash(user.password, salt, (err, hash) => {
-      if (err) return next(err);
-      user.password = hash;
-      next();
-    });
-  });
-});
+//     bcrypt.hash(user.password, salt, (err, hash) => {
+//       if (err) return next(err);
+//       user.password = hash;
+//       next();
+//     });
+//   });
+// });
 export default mongoose.model("Spicy_Admins", userSchema);
