@@ -24,7 +24,6 @@ export const refreshToken = async (req, res, next) => {
 
 
     if (!user) {
-      console.log(admin)
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -34,6 +33,7 @@ export const refreshToken = async (req, res, next) => {
     // Set the new tokens in the response headers
     res.setHeader("Authorization", `Bearer ${newAccessToken}`);
     res.setHeader("Refresh-Token", newRefreshToken);
+    res.json({newAccessToken, newRefreshToken});
     req.newAccessToken = newAccessToken;
     req.newRefreshToken = newRefreshToken;
     next();
