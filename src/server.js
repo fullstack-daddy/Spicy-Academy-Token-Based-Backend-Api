@@ -4,7 +4,7 @@ import { PORT, MONGODB_URI } from "./config/index.js";
 import router from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-// import { refreshToken } from "./middleware/authMiddleware.js";
+import refreshTokenRoute from "./routes/refreshTokenRoute.js";
 import mongoose from "mongoose";
 import courseRoutes from "./routes/courseRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
@@ -45,6 +45,7 @@ mongoose.promise = global.Promise;
 mongoose.set("strictQuery", false);
 
 server.use(router);
+server.use(refreshTokenRoute);
 
 // adding of courses
 server.use("/courses", courseRoutes);
