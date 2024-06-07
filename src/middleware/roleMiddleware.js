@@ -15,16 +15,14 @@ const roleMiddleware = (roles) => async (req, res, next) => {
     const user = req.user; // Adjust this line according to your implementation
 
     if (!user || !user.role) {
-      console.error("User not found or missing role");
       return res.status(403).json({
         error: "Unauthorized Access: User not found or missing role",
       });
     }
 
     if (!roles.includes(user.role)) {
-      console.error(`Unauthorized Access: User role ${user.role} does not have access`);
       return res.status(403).json({
-        error: `Unauthorized Access: User role ${user.role} does not have access`,
+        error: `Unauthorized Access: User with role of ${user.role} does not have access to perform this action`,
       });
     }
 

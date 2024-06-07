@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
       required: "Telephone number is required",
       max: 25,
       trim: true,
+      unique: true,
     },
     
     username: {
@@ -53,6 +54,12 @@ const userSchema = new mongoose.Schema(
       required: false,
       default: "admin",
     },
+    status:{
+      type: String,
+      required: false,
+      default: "pending",
+      enum: ["pending", "onboarded"],
+    }
   },
   { timestamps: true }
 );
@@ -77,4 +84,4 @@ userSchema.pre('save', function (next) {
     });
   });
 });
-export default mongoose.model("Spicy_Admins", userSchema);
+export default mongoose.model("Spicy_Pending_Admins", userSchema);

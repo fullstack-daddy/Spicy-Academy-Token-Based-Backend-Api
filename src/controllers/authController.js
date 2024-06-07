@@ -5,10 +5,12 @@ import {
 } from "../utils/generateToken.js";
 import bcrypt from "bcrypt";
 import Student from "../models/studentModel.js";
+import pendingAdmin from "../models/pendingAdminModel.js";
 import Admin from "../models/adminModel.js";
 import superAdmin from "../models/superAdminModel.js";
 import OTP from "../models/OTP.js";
 import Blacklist from "../models/blacklistModel.js";
+import { formatDate } from "../utils/formatDate.js";
 
 const app = express();
 app.use(express.json());
@@ -68,12 +70,13 @@ export const studentSignup = async (req, res) => {
 // Admin  registration
 export const adminSignup = async (req, res) => {
   try {
-    const { username, firstName, lastName, email, password, role, otp } =
-      req.body;
+    const { username, firstName, lastName, email, password, telephone, role, otp } = req.body;
 
-    // Check if the email already exists
-    const existingAdmin = await Admin.findOne({ email });
-    if (existingAdmin) {
+    // Check if the email already exists in either pendingAdmin or Admin collections
+    const existingPendingAdmin = await pendingAdmin.findOne({ email });
+    const existingApprovedAdmin = await Admin.findOne({ email });
+
+    if (existingPendingAdmin || existingApprovedAdmin) {
       return res.status(400).send("Email already in use");
     }
 
@@ -83,33 +86,37 @@ export const adminSignup = async (req, res) => {
       return res.status(400).send("The OTP is not valid");
     }
 
-    // Create a new user with hashed password
-    const newAdmin = new Admin({
+    // Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new pending admin with the hashed password
+    const newPendingAdmin = new pendingAdmin({
       username,
       email,
       firstName,
       lastName,
-      password,
+      telephone,
+      password: hashedPassword,
       role,
     });
 
     // Save the new user to the database
-    await newAdmin.save();
+    await newPendingAdmin.save();
 
-    const accessToken = generateAccessToken(newAdmin);
-    const refreshToken = generateRefreshToken(newAdmin);
+    const accessToken = generateAccessToken(newPendingAdmin);
+    const refreshToken = generateRefreshToken(newPendingAdmin);
 
     res.status(201).json({
-      message: "Admin registered successfully",
+      message: "Tutor registered successfully, please await the approval of your account for onboarding",
       accessToken,
       refreshToken,
-      Admin_Details: {
-        adminId: newAdmin.adminId,
-        username: newAdmin.username,
-        email: newAdmin.email,
-        firstName: newAdmin.firstName,
-        lastName: newAdmin.lastName,
-        role: newAdmin.role,
+      Pending_Admin_Details: {
+        adminId: newPendingAdmin._id,
+        username: newPendingAdmin.username,
+        email: newPendingAdmin.email,
+        firstName: newPendingAdmin.firstName,
+        lastName: newPendingAdmin.lastName,
+        role: newPendingAdmin.role,
       },
     });
   } catch (error) {
@@ -286,6 +293,36 @@ export const superAdminLogin = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: `Error logging in: ${error.message}` });
+  }
+};
+
+export const onboardPendingAdmin = async (req, res) => {
+  try {
+    // Fetch all pending admins
+    const pendingAdmins = await pendingAdmin.find({ status: "pending" });
+
+    // Map through pendingAdmins to extract and format required information
+    const pendingAdminsInfo = pendingAdmins.map((admin) => {
+      // Combine firstName and lastName
+      const name = `${admin.firstName} ${admin.lastName}`;
+
+      // Format the date (assuming createdAt is the submission date)
+      const submissionDate = formatDate(admin.createdAt);
+
+      // Return the required information
+      return {
+        name,
+        telephone: admin.telephone,
+        email: admin.email,
+        submissionDate,
+      };
+    });
+
+    // Send the array of pending admins info
+    res.status(200).json(pendingAdminsInfo);
+  } catch (error) {
+    console.error("Error fetching pending admins:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
