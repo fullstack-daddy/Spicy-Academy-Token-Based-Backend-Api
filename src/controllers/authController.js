@@ -99,7 +99,6 @@ export const adminSignup = async (req, res) => {
 
     // Create a new pending admin with the hashed password
     const newPendingAdmin = new pendingAdmin({
-      username,
       email,
       firstName,
       lastName,
@@ -120,7 +119,7 @@ export const adminSignup = async (req, res) => {
       accessToken,
       refreshToken,
       Pending_Admin_Details: {
-        adminId: newPendingAdmin._id,
+        adminId: newPendingAdmin.adminId,
         username: newPendingAdmin.username,
         email: newPendingAdmin.email,
         firstName: newPendingAdmin.firstName,
