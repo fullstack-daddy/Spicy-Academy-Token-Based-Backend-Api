@@ -95,6 +95,7 @@ export const adminSignup = async (req, res) => {
       email,
       firstName,
       lastName,
+      username,
       telephone,
       password: hashedPassword,
       role,
@@ -317,6 +318,7 @@ export const getPendingAdmins = async (req, res) => {
         adminId: admin.adminId,
         telephone: admin.telephone,
         email: admin.email,
+        role: admin.role,
         submissionDate,
       };
     });
@@ -326,6 +328,63 @@ export const getPendingAdmins = async (req, res) => {
   } catch (error) {
     console.error("Error fetching pending admins:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const onboardPendingAdmin = async (req, res) => {
+  try {
+    const { adminId } = req.params;
+
+    // Find the pending admin by adminId
+    const pendingAdminData = await pendingAdmin.findOne({ adminId });
+
+    if (!pendingAdminData) {
+      return res.status(404).json({ message: "Pending admin not found" });
+    }
+
+    if (pendingAdminData.status === 'onboarded') {
+      return res.status(400).json({ message: "Admin is already onboarded" });
+    }
+
+    // Create a new admin document
+    const newAdmin = new Admin({
+      adminId: pendingAdminData.adminId,
+      firstName: pendingAdminData.firstName,
+      lastName: pendingAdminData.lastName,
+      telephone: pendingAdminData.telephone,
+      email: pendingAdminData.email,
+      password: pendingAdminData.password, 
+      username: pendingAdminData.username,
+      role: pendingAdminData.role,
+    });
+
+    // Save the new admin
+    const savedAdmin = await newAdmin.save();
+
+    // Update the pending admin's status
+    pendingAdminData.status = 'onboarded';
+    await pendingAdminData.save();
+
+    res.status(200).json({ 
+      message: "Admin onboarded successfully", 
+      onboardedAdmin_Details: {
+        adminId: savedAdmin.adminId,
+        firstName: savedAdmin.firstName,
+        lastName: savedAdmin.lastName,
+        email: savedAdmin.email,
+        telephone: savedAdmin.telephone,
+        role: savedAdmin.role,
+        password: savedAdmin.password,
+      } 
+    });
+  } catch (error) {
+    console.error("Error onboarding admin:", error);
+    if (error.code === 11000) {
+      // Duplicate key error
+      res.status(400).json({ message: "Email or username already exists" });
+    } else {
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 };
 
