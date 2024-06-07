@@ -1,30 +1,34 @@
 import express from "express";
-import { isAuthenticated, authorize } from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+import { refreshToken, authMiddleware } from "../middleware/authMiddleware.js";
 import {
-    addCategory,
-    deleteCategory,
-    updateCategory
-  } from "../controllers/categoryController.js";
+  addCategory,
+  deleteCategory,
+  updateCategory,
+} from "../controllers/categoryController.js";
 
-  const router = express.Router();
+const router = express.Router();
 
-  router.post(
-    "/addCategory",
-    isAuthenticated,
-    authorize(["admin", "superadmin"]),
-    addCategory
-  );
-  router.put(
-    "/updateCategory/:categoryId",
-    isAuthenticated,
-    authorize(["admin", "superadmin"]),
-    updateCategory
-  );
-  router.delete(
-    "/deleteCategory/:categoryId",
-    isAuthenticated,
-    authorize(["admin", "superadmin"]),
-    deleteCategory
-  );
+router.post(
+  "/addCategory",
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
+  addCategory
+);
+router.put(
+  "/updateCategory/:categoryId",
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
+  updateCategory
+);
+router.delete(
+  "/deleteCategory/:categoryId",
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
+  deleteCategory
+);
 
-  export default router;
+export default router;
