@@ -47,7 +47,7 @@ export const deleteSubscription = async (req, res) => {
     }
 
     // Delete the subscription
-    await subscription.remove();
+    await subscriptionPlanModel.findOneAndDelete({ subscriptionPlanId });
 
     // Respond with a success message
     res.status(200).send('Subscription Plan deleted successfully');
