@@ -304,14 +304,17 @@ export const getPendingAdmins = async (req, res) => {
     // Map through pendingAdmins to extract and format required information
     const pendingAdminsInfo = pendingAdmins.map((admin) => {
       // Combine firstName and lastName
-      const name = `${admin.firstName} ${admin.lastName}`;
+      const fullName = `${admin.firstName} ${admin.lastName}`;
 
       // Format the date (assuming createdAt is the submission date)
       const submissionDate = formatDate(admin.createdAt);
 
       // Return the required information
       return {
-        name,
+        firstName: admin.firstName,
+        lastName:admin.lastName,
+        fullName,
+        adminId: admin.adminId,
         telephone: admin.telephone,
         email: admin.email,
         submissionDate,
