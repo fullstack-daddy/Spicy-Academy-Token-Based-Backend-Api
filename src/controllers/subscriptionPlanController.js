@@ -71,7 +71,6 @@ export const updateSubscription = async (req, res) => {
       // If the subscription is not found, respond with a 404 status and a message
       return res.status(404).json({ message: 'Subscription Plan not found' });
     }
-
     // Check if the authenticated admin is the creator of the subscription plan
     if (subscriptionPlan.adminId !== req.user.adminId) {
       // If not, respond with a 403 (Forbidden) status

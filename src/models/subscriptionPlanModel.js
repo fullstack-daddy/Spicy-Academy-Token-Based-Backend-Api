@@ -36,6 +36,10 @@ const SubscriptionPlan = new mongoose.Schema({
         required: true,
         max: 32
     },
+    adminId: {
+        type: String,
+        required: true,
+      },
 })
 
 export default mongoose.model("Spiciy_Subscription_Plan", SubscriptionPlan);

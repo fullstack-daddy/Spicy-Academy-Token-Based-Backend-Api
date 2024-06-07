@@ -50,10 +50,10 @@ server.use(router);
 server.use("/courses", courseRoutes);
 server.use("/users", userRoutes)
 
-// //adding of course category
+//adding of course category
 server.use("/category", categoryRoutes);
 
-// //adding of subscription
+//adding of subscription
 server.use("/subscription", subPlansRoutes);
 
 server.use("/otp", otpRouter);
