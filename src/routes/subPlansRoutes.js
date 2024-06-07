@@ -5,26 +5,30 @@ import {
   deleteSubscription,
   updateSubscription,
 } from "../controllers/subscriptionPlanController.js";
-import { isAuthenticated, authorize } from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+import { refreshToken, authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post(
   "/addSubscriptionPlan",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   addSubscription
 );
 router.delete(
   "/deleteSubscriptionPlan/:subscriptionId",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   deleteSubscription
 );
 router.put(
   "/updateSubscriptionPlan/:subscriptionId",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   updateSubscription
 );
 
