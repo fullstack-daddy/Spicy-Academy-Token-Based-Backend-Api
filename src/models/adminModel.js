@@ -42,11 +42,16 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    // temporaryPassword: {
+    //   type: String,
+    //   required: false,
+    //   select: true,
+    //   default: uuidv4, 
+    // },
     password: {
       type: String,
       required: "Password is required",
-      select: false,
-      
+      select: false, 
     },
     role: {
       type: String,

@@ -11,6 +11,7 @@ import superAdmin from "../models/superAdminModel.js";
 import OTP from "../models/OTP.js";
 import Blacklist from "../models/blacklistModel.js";
 import { formatDate } from "../utils/formatDate.js";
+import {generateUniqueUsername} from "../utils/generateUniqueUsername.js";
 
 const app = express();
 app.use(express.json());
@@ -431,6 +432,55 @@ export const onboardPendingAdmin = async (req, res) => {
     } else {
       res.status(500).json({ message: "Internal server error" });
     }
+  }
+};
+
+export const superAdminAddAdmin = async (req, res) => {
+  try {
+    const { firstName, lastName, email,telephone, password, role } = req.body;
+
+    // Check if the email already exists in either pendingAdmin or Admin collections
+    const existingPendingAdminEmail = await pendingAdmin.findOne({ email });
+    const existingApprovedAdminEmail = await Admin.findOne({ email });
+
+    if (existingPendingAdminEmail || existingApprovedAdminEmail) {
+      return res.status(400).send("Email already in use");
+    }
+
+    // Generate a unique username
+    const username = await generateUniqueUsername(firstName, lastName);
+
+    // Create a new admin
+    const newAdmin = new Admin({
+      username,
+      email,
+      firstName,
+      lastName,
+      telephone,
+      password,
+      role,
+    });
+
+    // Save the new admin to the database
+    await newAdmin.save();
+
+    const accessToken = generateAccessToken(newAdmin);
+    const refreshToken = generateRefreshToken(newAdmin);
+
+    res.status(201).json({
+      message: "Admin registered successfully",
+      accessToken,
+      refreshToken,
+      Admin_Details: {
+        adminId: newAdmin.adminId,
+        username: newAdmin.username,
+        email: newAdmin.email,
+        firstName: newAdmin.firstName,
+        lastName: newAdmin.lastName,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: `Error signing up: ${error.message}` });
   }
 };
 

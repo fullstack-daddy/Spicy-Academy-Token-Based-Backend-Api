@@ -9,6 +9,7 @@ import {
   getPendingAdmins,
   getOnboardedAdmins,
   onboardPendingAdmin,
+  superAdminAddAdmin,
   superAdminSignup,
 } from "../controllers/authController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
@@ -35,6 +36,13 @@ router.get(
   authMiddleware,
   roleMiddleware(["superadmin"]),
   getOnboardedAdmins
+);
+router.post(
+  "/superAdminAddAdmin",
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["superadmin"]),
+  superAdminAddAdmin
 );
 router.put(
   "/onboardPendingAdmin/:adminId",
