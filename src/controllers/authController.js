@@ -101,7 +101,7 @@ export const adminSignup = async (req, res) => {
       lastName,
       username,
       telephone,
-      password: hashedPassword,
+      password,
       role,
     });
 
