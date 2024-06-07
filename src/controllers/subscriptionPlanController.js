@@ -62,11 +62,11 @@ export const deleteSubscription = async (req, res) => {
 // Update a subscription by ID
 export const updateSubscription = async (req, res) => {
   try {
-    const { subscriptionId } = req.params;
+    const { subscriptionPlanId } = req.params;
 
-    // Find and update the subscription by ID with the new data
+    // Find the subscription by ID
     const subscriptionPlan = await subscriptionPlanModel.findOne(
-      { subscriptionId }
+      { subscriptionPlanId }
     );
 
     if (!subscriptionPlan) {
@@ -82,7 +82,7 @@ export const updateSubscription = async (req, res) => {
 
     // Update the subscription
     const updatedSubscriptionPlan = await subscriptionPlanModel.findOneAndUpdate(
-      { subscriptionId },
+      { subscriptionPlanId },
       req.body,
       { new: true, runValidators: true }
     );
