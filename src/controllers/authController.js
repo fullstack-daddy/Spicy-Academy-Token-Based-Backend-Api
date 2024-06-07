@@ -339,6 +339,41 @@ export const getPendingAdmins = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+export const getOnboardedAdmins = async (req, res) => {
+  try {
+    // Fetch all pending admins
+    const pendingAdmins = await pendingAdmin.find({ status: "onboarded" });
+
+    // Map through pendingAdmins to extract and format required information
+    const pendingAdminsInfo = pendingAdmins.map((admin) => {
+      // Combine firstName and lastName
+      const fullName = `${admin.firstName} ${admin.lastName}`;
+
+      // Format the date (assuming createdAt is the submission date)
+      const submissionDate = formatDate(admin.createdAt);
+
+      // Return the required information
+      return {
+        firstName: admin.firstName,
+        lastName:admin.lastName,
+        fullName,
+        adminId: admin.adminId,
+        telephone: admin.telephone,
+        email: admin.email,
+        password: admin.password,
+        role: admin.role,
+        status: admin.status,
+        submissionDate,
+      };
+    });
+
+    // Send the array of pending admins info
+    res.status(200).json(pendingAdminsInfo);
+  } catch (error) {
+    console.error("Error fetching pending admins:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 export const onboardPendingAdmin = async (req, res) => {
   try {

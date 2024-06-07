@@ -7,6 +7,7 @@ import {
   studentSignup,
   adminSignup,
   getPendingAdmins,
+  getOnboardedAdmins,
   onboardPendingAdmin,
   superAdminSignup,
 } from "../controllers/authController.js";
@@ -27,6 +28,13 @@ router.get(
   authMiddleware,
   roleMiddleware(["superadmin"]),
   getPendingAdmins
+);
+router.get(
+  "/getOnboardedAdmins",
+  refreshToken,
+  authMiddleware,
+  roleMiddleware(["superadmin"]),
+  getOnboardedAdmins
 );
 router.put(
   "/onboardPendingAdmin/:adminId",
