@@ -4,7 +4,7 @@ import categoryModel from "../models/categoryModel.js";
 // Add category function
 export const addCategory = async (req, res) => {
   try {
-    const newCategory = new Category({
+    const newCategory = new categoryModel({
       ...req.body,
       adminId: req.user.adminId,
     });
@@ -21,7 +21,7 @@ export const updateCategory = async (req, res) => {
     const { categoryId } = req.params;
 
     // Find the category
-    const category = await Category.findOne({ categoryId });
+    const category = await categoryModel.findOne({ categoryId });
 
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
@@ -33,7 +33,7 @@ export const updateCategory = async (req, res) => {
     }
 
     // Update the category
-    const updatedCategory = await Category.findOneAndUpdate(
+    const updatedCategory = await categoryModel.findOneAndUpdate(
       { categoryId },
       req.body,
       { new: true, runValidators: true }
@@ -51,7 +51,7 @@ export const deleteCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
     // Find the category
-    const deleteCategory = await Category.findOne({ categoryId });
+    const deleteCategory = await categoryModel.findOne({ categoryId });
 
     if (!deleteCategory) {
       return res.status(404).json({ message: "Category not found" });
@@ -63,7 +63,7 @@ export const deleteCategory = async (req, res) => {
     }
 
     // Delete the category
-    await Category.findOneAndDelete({ categoryId });
+    await categoryModel.findOneAndDelete({ categoryId });
 
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
