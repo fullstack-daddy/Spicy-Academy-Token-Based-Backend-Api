@@ -10,7 +10,7 @@ export const addSubscription = async (req, res) => {
     // and include the adminId
     const newSubscription = new subscriptionPlanModel({
       ...req.body,
-      adminId: req.user.adminId
+      adminId: req.user.adminId,
     });
 
     // Save the new subscription to the database
