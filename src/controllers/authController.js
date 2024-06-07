@@ -468,7 +468,7 @@ export const superAdminAddAdmin = async (req, res) => {
     const refreshToken = generateRefreshToken(newAdmin);
 
     res.status(201).json({
-      message: "Admin registered successfully",
+      message: "Admin added successfully",
       accessToken,
       refreshToken,
       Admin_Details: {
