@@ -93,10 +93,7 @@ export const adminSignup = async (req, res) => {
     if (response.length === 0 || otp !== response[0].otp) {
       return res.status(400).send("The OTP is not valid");
     }
-
-    // Hash the password before storing it
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    
     // Create a new pending admin with the hashed password
     const newPendingAdmin = new pendingAdmin({
       email,
