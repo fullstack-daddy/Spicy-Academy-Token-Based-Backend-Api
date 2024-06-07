@@ -1,7 +1,7 @@
 // Helper function to generate a unique username
 
-import pendingAdmin from "../models/pendingAdminModel";
-import Admin from "../models/adminModel";
+import pendingAdmin from "../models/pendingAdminModel.js";
+import Admin from "../models/adminModel.js";
 
 export const generateUniqueUsername = async (firstName, lastName) => {
     const baseUsername = `${firstName.toLowerCase()}.${lastName.toLowerCase()}`;
