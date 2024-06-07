@@ -5,15 +5,12 @@ import router from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 // import { refreshToken } from "./middleware/authMiddleware.js";
-// import session from "express-session";
 import mongoose from "mongoose";
 import courseRoutes from "./routes/courseRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-// import subPlansRoutes from "./routes/subPlansRoutes.js";
-// import MongoStore from "connect-mongo";
+import subPlansRoutes from "./routes/subPlansRoutes.js";
 import otpRouter from "../src/routes/otpRoutes.js";
-// import deserializeUser from "../src/middleware/deserializer.js";
 
 const server = express();
 
@@ -49,9 +46,6 @@ mongoose.set("strictQuery", false);
 
 server.use(router);
 
-// Use the middleware for routes that require authentication
-// server.use(deserializeUser);
-
 // adding of courses
 server.use("/courses", courseRoutes);
 server.use("/users", userRoutes)
@@ -60,7 +54,7 @@ server.use("/users", userRoutes)
 server.use("/category", categoryRoutes);
 
 // //adding of subscription
-// server.use("/subscription", subPlansRoutes);
+server.use("/subscription", subPlansRoutes);
 
 server.use("/otp", otpRouter);
 

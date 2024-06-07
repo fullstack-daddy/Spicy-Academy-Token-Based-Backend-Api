@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const SubscriptionPlan = new mongoose.Schema({
     
-    subscriptionId: {
+    subscriptionPlanId: {
         type: String,
         default: uuidv4,
         unique: true,
@@ -38,4 +38,4 @@ const SubscriptionPlan = new mongoose.Schema({
     },
 })
 
-export default mongoose.model("subscription", SubscriptionPlan);
+export default mongoose.model("Spiciy_Subscription_Plan", SubscriptionPlan);

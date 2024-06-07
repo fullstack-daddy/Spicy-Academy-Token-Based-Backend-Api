@@ -1,18 +1,28 @@
 // subscriptionController.js
 
-import Subscription from "../models/Subscription.js";
+import subscriptionPlanModel from "../models/subscriptionPlanModel.js";
 
 // Add a new subscription
 export const addSubscription = async (req, res) => {
   try {
+    // Assuming you have middleware that sets req.user.adminId
+    const adminId = req.user.adminId;
+
     // Create a new Subscription object with the request body data
-    const newSubscription = new Subscription(req.body);
-    
+    // and include the adminId
+    const newSubscription = new subscriptionPlanModel({
+      ...req.body,
+      adminId: adminId
+    });
+
     // Save the new subscription to the database
     const savedSubscription = await newSubscription.save();
-    
+
     // Respond with the created subscription data
-    res.status(201).json(savedSubscription);
+    res.status(201).json({
+      message: "Subscription plan Saved Successfully",
+      savedSubscription
+    });
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
@@ -25,7 +35,7 @@ export const deleteSubscription = async (req, res) => {
     const { subscriptionId } = req.params;
 
     // Find and delete the subscription by ID
-    const deletedSubscription = await Subscription.findOneAndDelete({ _id: subscriptionId });
+    const deletedSubscription = await subscriptionPlanModel.findOneAndDelete({ _id: subscriptionId });
     
     if (!deletedSubscription) {
       // If the subscription is not found, respond with a 404 status and a message
@@ -46,7 +56,7 @@ export const updateSubscription = async (req, res) => {
     const { subscriptionId } = req.params;
 
     // Find and update the subscription by ID with the new data
-    const updatedSubscription = await Subscription.findOneAndUpdate(
+    const updatedSubscription = await subscriptionPlanModel.findOneAndUpdate(
       { _id: subscriptionId },
       req.body,
       { new: true, runValidators: true }
