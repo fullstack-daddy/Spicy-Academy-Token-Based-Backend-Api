@@ -65,26 +65,30 @@ export const updateSubscription = async (req, res) => {
     const { subscriptionId } = req.params;
 
     // Find and update the subscription by ID with the new data
-    const updatedSubscription = await subscriptionPlanModel.findOne(
+    const subscriptionPlan = await subscriptionPlanModel.findOne(
       { subscriptionId }
     );
 
-    if (!updatedSubscription) {
+    if (!subscriptionPlan) {
       // If the subscription is not found, respond with a 404 status and a message
       return res.status(404).json({ message: 'Subscription Plan not found' });
     }
 
     // Check if the authenticated admin is the creator of the subscription plan
-    if (updatedSubscription.adminId !== req.user.adminId) {
+    if (subscriptionPlan.adminId !== req.user.adminId) {
       // If not, respond with a 403 (Forbidden) status
       return res.status(403).json({ message: 'You are not authorized to delete this subscription plan' });
     }
 
     // Update the subscription
-    await updatedSubscription.remove();
+    const updatedSubscriptionPlan = await subscriptionPlanModel.findOneAndUpdate(
+      { subscriptionId },
+      req.body,
+      { new: true, runValidators: true }
+    );
 
     // Respond with the updated subscription data
-    res.status(200).json(updatedSubscription);
+    res.status(200).json({message: "Subscription Plan Updated Successfully", updatedSubscriptionPlan});
   } catch (error) {
     if (error.name === 'ValidationError') {
       // Handle validation errors by responding with a 400 status and the error messages
