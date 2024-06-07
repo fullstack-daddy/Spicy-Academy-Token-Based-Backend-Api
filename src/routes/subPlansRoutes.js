@@ -18,14 +18,14 @@ router.post(
   addSubscription
 );
 router.delete(
-  "/deleteSubscriptionPlan/:subscriptionId",
+  "/deleteSubscriptionPlan/:subscriptionPlanId",
   refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   deleteSubscription
 );
 router.put(
-  "/updateSubscriptionPlan/:subscriptionId",
+  "/updateSubscriptionPlan/:subscriptionPlanId",
   refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),

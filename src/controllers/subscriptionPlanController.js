@@ -5,14 +5,12 @@ import subscriptionPlanModel from "../models/subscriptionPlanModel.js";
 // Add a new subscription
 export const addSubscription = async (req, res) => {
   try {
-    // Assuming you have middleware that sets req.user.adminId
-    const adminId = req.user.adminId;
 
     // Create a new Subscription object with the request body data
     // and include the adminId
     const newSubscription = new subscriptionPlanModel({
       ...req.body,
-      adminId: adminId
+      adminId: req.user.adminId
     });
 
     // Save the new subscription to the database
