@@ -6,7 +6,7 @@ import {
   logout,
   studentSignup,
   adminSignup,
-  onboardPendingAdmin,
+  getPendingAdmin,
   superAdminSignup,
 } from "../controllers/authController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
@@ -21,11 +21,11 @@ router.get("/logout", logout);
 router.post("/studentSignup", studentSignup);
 router.post("/adminSignup", adminSignup);
 router.get(
-  "/onboardPendingAdmin",
+  "/getPendingAdmin",
   refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
-  onboardPendingAdmin
+  getPendingAdmin
 );
 router.post("/superAdminSignup", superAdminSignup);
 
