@@ -10,7 +10,7 @@ import superAdmin from "../models/superAdminModel.js";
 // Refresh Token Middleware
 export const refreshToken = async (req, res, next) => {
   try {
-    const refreshToken = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
+    const refreshToken = req.headers.authorization?.split(" ")[1];
     if (!refreshToken) {
       return res.status(400).json({ message: "Refresh token is required" });
     }
