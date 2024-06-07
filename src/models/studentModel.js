@@ -44,6 +44,13 @@ const userSchema = new mongoose.Schema(
       enum: ["student"],
       default: "student",
     },
+    telephone: {
+      type: String,
+      required: "Telephone number is required",
+      max: 25,
+      trim: true,
+      unique: true,
+    },
     googleId: {
       type: String,
       unique: false,
