@@ -28,8 +28,8 @@ router.get(
   roleMiddleware(["superadmin"]),
   getPendingAdmins
 );
-router.post(
-  "/onboardPendingAdmin:/adminId",
+router.put(
+  "/onboardPendingAdmin/:adminId",
   refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
@@ -38,3 +38,5 @@ router.post(
 router.post("/superAdminSignup", superAdminSignup);
 
 export default router;
+
+// https://spicy-academy-token-based-backend-api.onrender.com/onboardPendingAdmin/27c206c2-3df0-4cf3-a3b1-47ffd6389752

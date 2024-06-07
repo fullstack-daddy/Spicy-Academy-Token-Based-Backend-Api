@@ -73,11 +73,18 @@ export const adminSignup = async (req, res) => {
     const { username, firstName, lastName, email, password, telephone, role, otp } = req.body;
 
     // Check if the email already exists in either pendingAdmin or Admin collections
-    const existingPendingAdmin = await pendingAdmin.findOne({ email });
-    const existingApprovedAdmin = await Admin.findOne({ email });
+    const existingPendingAdminEmail = await pendingAdmin.findOne({ email });
+    const existingApprovedAdminEmail = await Admin.findOne({ email });
 
-    if (existingPendingAdmin || existingApprovedAdmin) {
+    if (existingPendingAdminEmail || existingApprovedAdminEmail) {
       return res.status(400).send("Email already in use");
+    }
+    // Check if the username already exists in either pendingAdmin or Admin collections
+    const existingPendingAdminUsername = await pendingAdmin.findOne({ username });
+    const existingApprovedAdminUsername = await Admin.findOne({ username });
+
+    if (existingPendingAdminUsername || existingApprovedAdminUsername) {
+      return res.status(400).send("Username already in use");
     }
 
     // Find the most recent OTP for the email
@@ -338,7 +345,7 @@ export const onboardPendingAdmin = async (req, res) => {
     const { adminId } = req.params;
 
     // Find the pending admin by adminId
-    const pendingAdminData = await pendingAdmin.findOne({ adminId });
+    const pendingAdminData = await pendingAdmin.findOne({ adminId }).select('+password');
 
     if (!pendingAdminData) {
       return res.status(404).json({ message: "Pending admin not found" });
@@ -366,11 +373,11 @@ export const onboardPendingAdmin = async (req, res) => {
 
     // Update the pending admin's status
     pendingAdminData.status = 'onboarded';
-    await pendingAdminData.save();
+    const pendingAdminDataSaved= await pendingAdminData.save();
 
     res.status(200).json({ 
       message: "Admin onboarded successfully", 
-      onboardedAdmin_Details: {
+      onboarded_Admin_Details: {
         adminId: savedAdmin.adminId,
         firstName: savedAdmin.firstName,
         lastName: savedAdmin.lastName,
@@ -378,6 +385,7 @@ export const onboardPendingAdmin = async (req, res) => {
         telephone: savedAdmin.telephone,
         role: savedAdmin.role,
         password: savedAdmin.password,
+        status: pendingAdminDataSaved.status,
       } 
     });
   } catch (error) {
