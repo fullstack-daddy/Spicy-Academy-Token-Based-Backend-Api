@@ -296,7 +296,7 @@ export const superAdminLogin = async (req, res) => {
   }
 };
 
-export const getPendingAdmin = async (req, res) => {
+export const getPendingAdmins = async (req, res) => {
   try {
     // Fetch all pending admins
     const pendingAdmins = await pendingAdmin.find({ status: "pending" });

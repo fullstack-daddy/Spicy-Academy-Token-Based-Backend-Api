@@ -6,7 +6,7 @@ import {
   logout,
   studentSignup,
   adminSignup,
-  getPendingAdmin,
+  getPendingAdmins,
   superAdminSignup,
 } from "../controllers/authController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
@@ -17,15 +17,15 @@ const router = express.Router();
 router.post("/studentLogin", studentLogin);
 router.post("/adminLogin", adminLogin);
 router.post("/superAdminLogin", superAdminLogin);
-router.get("/logout", logout);
+router.get("/logout",authMiddleware, logout);
 router.post("/studentSignup", studentSignup);
 router.post("/adminSignup", adminSignup);
 router.get(
-  "/getPendingAdmin",
+  "/getPendingAdmins",
   refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
-  getPendingAdmin
+  getPendingAdmins
 );
 router.post("/superAdminSignup", superAdminSignup);
 
