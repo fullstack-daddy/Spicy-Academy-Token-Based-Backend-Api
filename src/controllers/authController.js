@@ -320,6 +320,7 @@ export const getPendingAdmins = async (req, res) => {
         email: admin.email,
         password: admin.password,
         role: admin.role,
+        status: admin.status,
         submissionDate,
       };
     });
@@ -357,6 +358,7 @@ export const onboardPendingAdmin = async (req, res) => {
       password: pendingAdminData.password, 
       username: pendingAdminData.username,
       role: pendingAdminData.role,
+      status: pendingAdminData.status,
     });
 
     // Save the new admin
