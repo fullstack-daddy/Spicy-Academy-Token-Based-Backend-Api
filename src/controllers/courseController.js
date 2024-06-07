@@ -36,7 +36,7 @@ export const addShopperCourse = async (req, res) => {
     const savedShopperCourse = await newShopperCourse.save();
     
     // Respond with the created shopper course data
-    res.status(201).json(savedShopperCourse);
+    res.status(201).json({message:"Course Created Successfully", savedShopperCourse});
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
@@ -96,7 +96,7 @@ export const updateAdminFreeCourse = async (req, res) => {
     );
 
     // Respond with the updated free course data
-    res.status(200).json(updatedFreeCourse);
+    res.status(200).json({message:"Course Updated Successfully", updatedFreeCourse});
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).json({ message: error.message });
@@ -128,7 +128,7 @@ export const updateAdminShopperCourse = async (req, res) => {
     );
 
     // Respond with the updated shopper course data
-    res.status(200).json(updatedShopperCourse);
+    res.status(200).json({message:"Course Updated Successfully", updatedShopperCourse});
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).json({ message: error.message });
