@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 // import session from "express-session";
 import mongoose from "mongoose";
 import courseRoutes from "./routes/courseRoutes.js";
-// import categoryRoutes from "./routes/categoryRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 // import subPlansRoutes from "./routes/subPlansRoutes.js";
 // import MongoStore from "connect-mongo";
@@ -57,7 +57,7 @@ server.use("/courses", courseRoutes);
 server.use("/users", userRoutes)
 
 // //adding of course category
-// server.use("/category", categoryRoutes);
+server.use("/category", categoryRoutes);
 
 // //adding of subscription
 // server.use("/subscription", subPlansRoutes);

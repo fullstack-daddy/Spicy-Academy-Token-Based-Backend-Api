@@ -6,10 +6,10 @@ export const addCategory = async (req, res) => {
   try {
     const newCategory = new Category({
       ...req.body,
-      adminId: req.user.userId,
+      adminId: req.user.adminId,
     });
     const savedCategory = await newCategory.save();
-    res.status(201).json(savedCategory);
+    res.status(201).json({message: "Category Created Successfully", savedCategory});
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -28,7 +28,7 @@ export const updateCategory = async (req, res) => {
     }
 
     // Check if the authenticated user is the admin who created the category
-    if (category.adminId !== req.user.userId) {
+    if (category.adminId !== req.user.adminId) {
       return res.status(403).json({ message: "Not authorized to update this category" });
     }
 
@@ -39,7 +39,7 @@ export const updateCategory = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    res.status(200).json(updatedCategory);
+    res.status(200).json({message: "Category Updated Successfully", updatedCategory});
   } catch (error) {
     console.error("Error updating category:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -58,7 +58,7 @@ export const deleteCategory = async (req, res) => {
     }
 
     // Check if the authenticated user is the admin who created the category
-    if (deleteCategory.adminId !== req.user.userId) {
+    if (deleteCategory.adminId !== req.user.adminId) {
       return res.status(403).json({ message: "Not authorized to delete this category" });
     }
 

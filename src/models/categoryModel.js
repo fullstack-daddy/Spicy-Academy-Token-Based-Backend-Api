@@ -73,9 +73,8 @@ const CourseCategory = new mongoose.Schema({
   },
   adminId: {
     type: String,
-    ref: "users",
     required: true,
   },
 });
 
-export default mongoose.model("addCourseCategory", CourseCategory);
+export default mongoose.model("Spicy_Course_Category", CourseCategory);
