@@ -34,13 +34,22 @@ export const deleteSubscription = async (req, res) => {
   try {
     const { subscriptionId } = req.params;
 
-    // Find and delete the subscription by ID
-    const deletedSubscription = await subscriptionPlanModel.findOneAndDelete({ _id: subscriptionId });
-    
-    if (!deletedSubscription) {
+    // Find the subscription by ID
+    const subscription = await subscriptionPlanModel.findOne({ subscriptionId });
+
+    if (!subscription) {
       // If the subscription is not found, respond with a 404 status and a message
       return res.status(404).json({ message: 'Subscription Plan not found' });
     }
+
+    // Check if the authenticated admin is the creator of the subscription plan
+    if (subscription.adminId !== req.user.adminId) {
+      // If not, respond with a 403 (Forbidden) status
+      return res.status(403).json({ message: 'You are not authorized to delete this subscription plan' });
+    }
+
+    // Delete the subscription
+    await subscription.remove();
 
     // Respond with a success message
     res.status(200).send('Subscription Plan deleted successfully');
@@ -56,16 +65,23 @@ export const updateSubscription = async (req, res) => {
     const { subscriptionId } = req.params;
 
     // Find and update the subscription by ID with the new data
-    const updatedSubscription = await subscriptionPlanModel.findOneAndUpdate(
-      { _id: subscriptionId },
-      req.body,
-      { new: true, runValidators: true }
+    const updatedSubscription = await subscriptionPlanModel.findOne(
+      { subscriptionId }
     );
 
     if (!updatedSubscription) {
       // If the subscription is not found, respond with a 404 status and a message
       return res.status(404).json({ message: 'Subscription Plan not found' });
     }
+
+    // Check if the authenticated admin is the creator of the subscription plan
+    if (updatedSubscription.adminId !== req.user.adminId) {
+      // If not, respond with a 403 (Forbidden) status
+      return res.status(403).json({ message: 'You are not authorized to delete this subscription plan' });
+    }
+
+    // Update the subscription
+    await updatedSubscription.remove();
 
     // Respond with the updated subscription data
     res.status(200).json(updatedSubscription);
