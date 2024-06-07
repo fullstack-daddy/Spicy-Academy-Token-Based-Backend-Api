@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.post(
   "/addFreeCourse",
-  // refreshToken,
+  refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   addFreeCourse
