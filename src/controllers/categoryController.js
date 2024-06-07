@@ -1,5 +1,5 @@
 // courseController.js
-import Category from "../models/Category.js";
+import categoryModel from "../models/categoryModel.js";
 
 // Add category function
 export const addCategory = async (req, res) => {
