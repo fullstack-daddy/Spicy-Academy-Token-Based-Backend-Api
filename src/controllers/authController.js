@@ -318,6 +318,7 @@ export const getPendingAdmins = async (req, res) => {
         adminId: admin.adminId,
         telephone: admin.telephone,
         email: admin.email,
+        password: admin.password,
         role: admin.role,
         submissionDate,
       };
