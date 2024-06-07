@@ -16,14 +16,14 @@ import { refreshToken, authMiddleware } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post(
-  "/getAdminFreeCourses",
+  "/addFreeCourse",
   refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   addFreeCourse
 );
 router.post(
-  "/getAdminShopperCourses",
+  "/addShopperCourse",
   refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),

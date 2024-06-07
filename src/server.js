@@ -4,10 +4,10 @@ import { PORT, MONGODB_URI } from "./config/index.js";
 import router from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import { refreshToken } from "./middleware/authMiddleware.js";
+// import { refreshToken } from "./middleware/authMiddleware.js";
 // import session from "express-session";
 import mongoose from "mongoose";
-// import courseRoutes from "./routes/courseRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
 // import categoryRoutes from "./routes/categoryRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 // import subPlansRoutes from "./routes/subPlansRoutes.js";
@@ -51,9 +51,10 @@ server.use(router);
 
 // Use the middleware for routes that require authentication
 // server.use(deserializeUser);
+
 // adding of courses
-// server.use("/courses", courseRoutes);
-server.use("/users", refreshToken, userRoutes)
+server.use("/courses", courseRoutes);
+server.use("/users", userRoutes)
 
 // //adding of course category
 // server.use("/category", categoryRoutes);
