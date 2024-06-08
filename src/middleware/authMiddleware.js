@@ -7,6 +7,9 @@ import Student from "../models/studentModel.js";
 import Admin from "../models/adminModel.js";
 import superAdmin from "../models/superAdminModel.js";
 
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
 // Refresh Token Middleware
 export const refreshToken = async (req, res, next) => {
   try {
@@ -20,7 +23,7 @@ export const refreshToken = async (req, res, next) => {
       return res.status(400).json({ message: "Refresh token is required" });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
 
     const student = await Student.findOne({ studentId: decoded.studentId, role: "student" });
     const admin = await Admin.findOne({ adminId: decoded.adminId, role: "admin" });
@@ -67,7 +70,7 @@ export const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ error: "Access token is required" });
     }
 
-    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+    const decoded = jwt.verify(accessToken, JWT_SECRET);
 
     // Check if token is about to expire (e.g., within the next minute)
     if (decoded.exp - Math.floor(Date.now() / 1000) <= 60) {
