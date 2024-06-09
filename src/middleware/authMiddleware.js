@@ -1,8 +1,5 @@
 import jwt from "jsonwebtoken";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-} from "../utils/generateToken.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/generateToken.js";
 import Student from "../models/studentModel.js";
 import Admin from "../models/adminModel.js";
 import superAdmin from "../models/superAdminModel.js";
@@ -10,8 +7,8 @@ import superAdmin from "../models/superAdminModel.js";
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
-// Refresh Token Middleware
-export const refreshToken = async (req, res, next) => {
+// Token Refresh Route Handler
+export const handleTokenRefresh = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -23,13 +20,30 @@ export const refreshToken = async (req, res, next) => {
       return res.status(400).json({ message: "Refresh token is required" });
     }
 
-    const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+    } catch (jwtError) {
+      if (jwtError instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ message: "Refresh token has expired" });
+      }
+      return res.status(401).json({ message: "Invalid refresh token: " + jwtError.message });
+    }
 
-    const student = await Student.findOne({ studentId: decoded.studentId, role: "student" });
-    const admin = await Admin.findOne({ adminId: decoded.adminId, role: "admin" });
-    const superAdminUser = await superAdmin.findOne({ superAdminId: decoded.superAdminId, role: "superadmin" });
-
-    const user = student || admin || superAdminUser;
+    let user;
+    switch (decoded.role) {
+      case "student":
+        user = await Student.findOne({ studentId: decoded.studentId });
+        break;
+      case "admin":
+        user = await Admin.findOne({ adminId: decoded.adminId });
+        break;
+      case "superadmin":
+        user = await superAdmin.findOne({ superAdminId: decoded.superAdminId });
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid user role in token" });
+    }
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -38,21 +52,10 @@ export const refreshToken = async (req, res, next) => {
     const newAccessToken = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
 
-    // Set the new tokens in the response headers
-    res.setHeader("Authorization", `Bearer ${newAccessToken}`);
-    res.setHeader("Refresh-Token", newRefreshToken);
-    req.newAccessToken = newAccessToken;
-    req.newRefreshToken = newRefreshToken;
-    next();
+    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ message: "Refresh token has expired" });
-    }
-    if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: "Invalid refresh token: " + error.message });
-    }
-    // Handle other errors
-    res.status(500).json({ message: "Internal server error: " + error.message });
+    console.error("Refresh token error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -71,20 +74,7 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(accessToken, JWT_SECRET);
-
-    // Check if token is about to expire (e.g., within the next minute)
-    if (decoded.exp - Math.floor(Date.now() / 1000) <= 60) {
-      // If token is about to expire, use the new access token if available
-      if (req.newAccessToken) {
-        req.user = jwt.decode(req.newAccessToken);
-      } else {
-        // If no new token, proceed with the current one
-        req.user = decoded;
-      }
-    } else {
-      req.user = decoded;
-    }
-
+    req.user = decoded;
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {

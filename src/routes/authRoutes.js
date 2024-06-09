@@ -13,7 +13,7 @@ import {
   superAdminSignup,
 } from "../controllers/authController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
-import { refreshToken, authMiddleware } from "../middleware/authMiddleware.js";
+import {  authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -25,28 +25,28 @@ router.post("/studentSignup", studentSignup);
 router.post("/adminSignup", adminSignup);
 router.get(
   "/getPendingAdmins",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
   getPendingAdmins
 );
 router.get(
   "/getOnboardedAdmins",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
   getOnboardedAdmins
 );
 router.post(
   "/superAdminAddAdmin",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
   superAdminAddAdmin
 );
 router.put(
   "/onboardPendingAdmin/:adminId",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
   onboardPendingAdmin

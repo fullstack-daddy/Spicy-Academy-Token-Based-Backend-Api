@@ -6,27 +6,27 @@ import {
   updateSubscription,
 } from "../controllers/subscriptionPlanController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
-import { refreshToken, authMiddleware } from "../middleware/authMiddleware.js";
+import {  authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post(
   "/addSubscriptionPlan",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   addSubscription
 );
 router.delete(
   "/deleteSubscriptionPlan/:subscriptionPlanId",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   deleteSubscription
 );
 router.put(
   "/updateSubscriptionPlan/:subscriptionPlanId",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   updateSubscription

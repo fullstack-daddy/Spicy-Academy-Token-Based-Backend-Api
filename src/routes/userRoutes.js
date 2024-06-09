@@ -8,40 +8,40 @@ import {
   deleteAdmin,
   deleteStudent,
 } from "../controllers/userController.js";
-import { refreshToken } from "../middleware/authMiddleware.js";
+// import { refreshToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 router.get(
   "/getAllStudents",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   getAllStudents
 );
 router.get(
   "/getAllAdmins",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
   getAllAdmins
 );
 router.get(
   "/getAllUsers",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
   getAllUsers
 );
 router.delete(
   "/deleteAdmin/:adminId",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["superadmin"]),
   deleteAdmin
 );
 router.delete(
   "/deleteStudent/:studentId",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   deleteStudent

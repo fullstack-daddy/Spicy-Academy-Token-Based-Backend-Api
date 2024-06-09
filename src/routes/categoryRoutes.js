@@ -1,6 +1,6 @@
 import express from "express";
 import roleMiddleware from "../middleware/roleMiddleware.js";
-import { refreshToken, authMiddleware } from "../middleware/authMiddleware.js";
+import {  authMiddleware } from "../middleware/authMiddleware.js";
 import {
   addCategory,
   deleteCategory,
@@ -11,21 +11,21 @@ const router = express.Router();
 
 router.post(
   "/addCategory",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   addCategory
 );
 router.put(
   "/updateCategory/:categoryId",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   updateCategory
 );
 router.delete(
   "/deleteCategory/:categoryId",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   deleteCategory

@@ -11,7 +11,7 @@ import {
   deleteShopperCourse,
 } from "../controllers/courseController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
-import { refreshToken, authMiddleware } from "../middleware/authMiddleware.js";
+import  {authMiddleware} from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -24,14 +24,14 @@ router.post(
 );
 router.post(
   "/addShopperCourse",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   addShopperCourse
 );
 router.get(
   "/freeCourses",
-  refreshToken,
+  // refreshToken,
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   getAdminFreeCourses
