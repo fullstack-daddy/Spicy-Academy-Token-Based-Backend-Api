@@ -15,6 +15,20 @@ export const addCategory = async (req, res) => {
   }
 };
 
+//Get all Category created by a Admin
+export const getAllAdminCategory = async (req, res) => {
+  try {
+    // Find all free courses created by the authenticated user
+    const getAllCategory = await categoryModel.find({ adminId: req.user.adminId });
+    
+    // Respond with the retrieved free courses
+    res.status(200).send(getAllCategory);
+  } catch (error) {
+    // Handle errors by responding with a 500 status and the error message
+    res.status(500).send(error.message);
+  }
+}
+
 // Update category function
 export const updateCategory = async (req, res) => {
   try {

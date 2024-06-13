@@ -3,6 +3,7 @@ import roleMiddleware from "../middleware/roleMiddleware.js";
 import {  authMiddleware } from "../middleware/authMiddleware.js";
 import {
   addCategory,
+  getCategory,
   deleteCategory,
   updateCategory,
 } from "../controllers/categoryController.js";
@@ -15,6 +16,13 @@ router.post(
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   addCategory
+);
+router.get(
+  "/getCategory",
+  // refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
+  getCategory
 );
 router.put(
   "/updateCategory/:categoryId",
