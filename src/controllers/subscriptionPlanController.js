@@ -27,6 +27,20 @@ export const addSubscription = async (req, res) => {
   }
 };
 
+//Get all Subscription created by a Admin
+export const getAllAdminSubscriptions = async (req, res) => {
+  try {
+    // Find all free courses created by the authenticated user
+    const getSubscriptionPlan = await subscriptionPlanModel.find({ adminId: req.user.adminId });
+    
+    // Respond with the retrieved free courses
+    res.status(200).send(getSubscriptionPlan);
+  } catch (error) {
+    // Handle errors by responding with a 500 status and the error message
+    res.status(500).send(error.message);
+  }
+}
+
 // Delete a subscription by ID
 export const deleteSubscription = async (req, res) => {
   try {

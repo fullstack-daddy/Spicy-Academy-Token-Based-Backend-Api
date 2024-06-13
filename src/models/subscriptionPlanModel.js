@@ -40,6 +40,11 @@ const SubscriptionPlan = new mongoose.Schema({
         type: String,
         required: true,
       },
+      enrolledStudents:{
+        type: Array,
+        required:false,
+        default: [],
+      },
 })
 
 export default mongoose.model("Spiciy_Subscription_Plan", SubscriptionPlan);

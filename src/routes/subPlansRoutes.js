@@ -4,6 +4,7 @@ import {
   addSubscription,
   deleteSubscription,
   updateSubscription,
+  getAllAdminSubscriptions,
 } from "../controllers/subscriptionPlanController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 import {  authMiddleware } from "../middleware/authMiddleware.js";
@@ -16,6 +17,13 @@ router.post(
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   addSubscription
+);
+router.get(
+  "/getSubscriptionPlan",
+  // refreshToken,
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
+  getAllAdminSubscriptions,
 );
 router.delete(
   "/deleteSubscriptionPlan/:subscriptionPlanId",
