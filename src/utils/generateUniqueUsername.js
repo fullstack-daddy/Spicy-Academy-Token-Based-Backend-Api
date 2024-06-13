@@ -4,7 +4,7 @@ import pendingAdmin from "../models/pendingAdminModel.js";
 import Admin from "../models/adminModel.js";
 
 export const generateUniqueUsername = async (firstName, lastName) => {
-    const baseUsername = `${firstName}.${lastName}`;
+    const baseUsername = `${firstName}@${lastName}`;
     let username = baseUsername;
     let counter = 1;
   
