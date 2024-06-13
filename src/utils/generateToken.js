@@ -10,7 +10,7 @@ export const generateAccessToken = (user) => {
     superAdminId: user.superAdminId || undefined,
     role: user.role
   };
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "30m" });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "3d" });
 };
 
 export const generateRefreshToken = (user) => {
@@ -20,5 +20,5 @@ export const generateRefreshToken = (user) => {
     superAdminId: user.superAdminId || undefined,
     role: user.role
   };
-  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "3h" });
+  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "3d" });
 };
