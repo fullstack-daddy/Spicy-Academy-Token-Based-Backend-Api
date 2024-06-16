@@ -1,21 +1,27 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
-const AddFreeVideoCourseSchema = new mongoose.Schema({
-  freeCourseId: {
+const courseLessonSchema = new mongoose.Schema({
+  lessonId: {
     type: String,
     default: uuidv4,
     unique: true,
   },
-  courseTitle: {
+  lessonTitle: {
     type: String,
     required: true,
     unique: false,
     trim: true,
   },
-  courseOrder: {
-    type: Number,
+  lessonLevel:{
+    type: String,
     required: true,
+    default: "Beginner",
+    enum: ["Beginner", "Intermediate", "Advanced", ]
+  },
+  lessonOrder: {
+    type: Number,
+    required: false,
   },
   videoLink: {
     type: String,
@@ -61,9 +67,12 @@ const AddFreeVideoCourseSchema = new mongoose.Schema({
     type: Buffer,
     required: false,
   },
-  // lessons:{
-  //   ref: 'lessons'
-  // },
+  lessonSubscriptionCategory:{
+    type: String,
+    required: true,
+    default: "free",
+    enum: ["free", "paid"]
+  },
   adminId: {
     type: String,
     required: true,
@@ -75,4 +84,4 @@ const AddFreeVideoCourseSchema = new mongoose.Schema({
  },
 });
 
-export default mongoose.model("Spicy_Free_Course", AddFreeVideoCourseSchema);
+export default mongoose.model("Spicy_Course_Lessons", courseLessonSchema);

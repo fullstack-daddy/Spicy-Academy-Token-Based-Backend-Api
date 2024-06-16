@@ -8,8 +8,10 @@ import refreshTokenRoute from "./routes/refreshTokenRoute.js";
 import mongoose from "mongoose";
 import courseRoutes from "./routes/courseRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
 import subPlansRoutes from "./routes/subPlansRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import assignmentRoutes from "./routes/assignmentRoutes.js";
+import lessonRoutes from "./routes/lessonRoutes.js";
 import otpRouter from "../src/routes/otpRoutes.js";
 
 const server = express();
@@ -49,7 +51,9 @@ server.use(refreshTokenRoute);
 
 // adding of courses
 server.use("/courses", courseRoutes);
-server.use("/users", userRoutes)
+server.use("/assignment", assignmentRoutes);
+server.use("/lesson", lessonRoutes);
+server.use("/users", userRoutes);
 
 //adding of course category
 server.use("/category", categoryRoutes);

@@ -19,7 +19,7 @@ app.use(express.json());
 // Student  registration
 export const studentSignup = async (req, res) => {
   try {
-    const { username, firstName, lastName, email, password, role, otp } =
+    const { username, firstName, lastName, email, password, role, telephone, otp } =
       req.body;
 
     // Check if the email already exists
@@ -41,6 +41,7 @@ export const studentSignup = async (req, res) => {
       firstName,
       lastName,
       password,
+      telephone,
       role,
     });
 
@@ -60,6 +61,7 @@ export const studentSignup = async (req, res) => {
         email: newStudent.email,
         firstName: newStudent.firstName,
         lastName: newStudent.lastName,
+        telephone: newStudent.telephone,
         role: newStudent.role,
       },
     });

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 
 const userSchema = new mongoose.Schema(
@@ -59,7 +59,8 @@ const userSchema = new mongoose.Schema(
       required: false,
       default: "pending",
       enum: ["pending", "onboarded"],
-    }
+    },
+    
   },
   { timestamps: true }
 );

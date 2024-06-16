@@ -1,26 +1,37 @@
 import express from "express";
 import {
   studentAssignmentSubmit,
-  teacherAssignmentGradingSubmit,getAllCourseAssignments
+  teacherAssignmentGradingSubmit,
+  getAllPendingAssignments,
+  getAllReviewedAssignments,
 } from "../controllers/assignmentController.js";
-import { isAuthenticated, authorize } from "../middleware/authMiddleware.js";
+import {  authMiddleware } from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
 router.post(
-  "/studentAssignmentSubmission",
-  isAuthenticated,
+  "/studentAssignmentSubmission/:lessonId",
+  authMiddleware,
   studentAssignmentSubmit
 );
 router.get(
-  "/allAssignments",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
-  getAllCourseAssignments
+  "/getAllPendingAssignments",
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
+  getAllPendingAssignments
 );
-router.put(
-  "/teacherAssignmentGrading/:assignmentId",
-  isAuthenticated,
-  authorize(["admin", "superadmin"]),
+router.post(
+  "/teacherAssignmentGrading/:studentId/:assignmentId",
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
   teacherAssignmentGradingSubmit
 );
+router.get(
+  "/getAllReviewedAssignments",
+  authMiddleware,
+  roleMiddleware(["admin", "superadmin"]),
+  getAllReviewedAssignments
+);
+
+export default router
