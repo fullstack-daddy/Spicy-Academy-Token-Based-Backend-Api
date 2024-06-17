@@ -18,11 +18,11 @@ export const studentAssignmentSubmit = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // Find admin details
+    // Find lesson details
     const adminDetails = await courseLessonModel.findOne(params);
 
     if (!adminDetails) {
-      return res.status(404).json({ message: "Admin not found" });
+      return res.status(404).json({ message: "Lesson not found" });
     }
 
     // Concatenate the student's first name and last name to get the full name
@@ -34,6 +34,8 @@ export const studentAssignmentSubmit = async (req, res) => {
       studentEmail: studentDetails.email,
       studentId: user.studentId,
       lessonId,
+      lessonTitle: adminDetails.lessonTitle,
+      lessonLevel: adminDetails.lessonLevel,
       studentName,
       adminId: adminDetails.adminId, // Include adminId from the admin details
     });
@@ -94,6 +96,8 @@ export const teacherAssignmentGradingSubmit = async (req, res) => {
       adminId: req.user.adminId,
       assignmentId: findStudentAssignment.assignmentId,
       studentName: `${studentDetails.firstName} ${studentDetails.lastName}`,
+      lessonName: findStudentAssignment.lessonName,
+      lessonLevel: findStudentAssignment.lessonLevel,
       studentId: studentDetails.studentId,
       studentEmail: studentDetails.email,
       assignmentStudentSubmissionDate: findStudentAssignment.assignmentStudentSubmissionDate, // Ensure this field is populated

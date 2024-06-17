@@ -36,10 +36,14 @@ const pendingAssignment = new mongoose.Schema({
         required: true,
         default: Date.now
     },
-    // courseId: {
-    //     type: String,
-    //     required: true,
-    // },
+    lessonTitle: {
+        type: String,
+        required: true,
+    },
+    lessonLevel: {
+        type: String,
+        required: true,
+    },
     studentId: {
         type: String,
         required: true,

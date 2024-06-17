@@ -17,10 +17,10 @@ const reviewedAssignment = new mongoose.Schema(
       required: true,
       default: Date.now,
     },
-    // courseId: {
-    //   type: String,
-    //   required: true,
-    // },
+    lessonName: {
+      type: String,
+      required: true,
+    },
     studentId: {
       type: String,
       required: true,
@@ -30,6 +30,10 @@ const reviewedAssignment = new mongoose.Schema(
       required: true,
     },
     studentEmail: {
+      type: String,
+      required: true,
+    },
+    studentName: {
       type: String,
       required: true,
     },
