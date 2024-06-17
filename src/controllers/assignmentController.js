@@ -96,7 +96,7 @@ export const teacherAssignmentGradingSubmit = async (req, res) => {
       adminId: req.user.adminId,
       assignmentId: findStudentAssignment.assignmentId,
       studentName: `${studentDetails.firstName} ${studentDetails.lastName}`,
-      lessonName: findStudentAssignment.lessonName,
+      lessonTitle: findStudentAssignment.lessonTitle,
       lessonLevel: findStudentAssignment.lessonLevel,
       studentId: studentDetails.studentId,
       studentEmail: studentDetails.email,

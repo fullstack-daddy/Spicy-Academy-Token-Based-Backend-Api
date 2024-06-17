@@ -17,7 +17,7 @@ const reviewedAssignment = new mongoose.Schema(
       required: true,
       default: Date.now,
     },
-    lessonName: {
+    lessonTitle: {
       type: String,
       required: true,
     },
