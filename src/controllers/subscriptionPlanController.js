@@ -1,7 +1,6 @@
 // subscriptionController.js
 
 import subscriptionPlanModel from "../models/subscriptionPlanModel.js";
-
 // Add a new subscription
 export const addSubscription = async (req, res) => {
   try {
@@ -54,9 +53,6 @@ export const getAllAdminSubscriptions = async (req, res) => {
 }
 
 // Delete a subscription by ID
-import subscriptionPlanModel from '../models/subscriptionPlanModel.js';
-import Admin from '../models/adminModel.js';
-import SuperAdmin from '../models/superAdminModel.js';
 
 export const deleteSubscription = async (req, res) => {
   try {
@@ -101,23 +97,35 @@ export const deleteSubscription = async (req, res) => {
 };
 
 // Update a subscription by ID
+
 export const updateSubscription = async (req, res) => {
   try {
     const { subscriptionPlanId } = req.params;
+    const { adminId, superAdminId } = req.user;
 
     // Find the subscription by ID
-    const subscriptionPlan = await subscriptionPlanModel.findOne(
-      { subscriptionPlanId }
-    );
+    const subscriptionPlan = await subscriptionPlanModel.findOne({ subscriptionPlanId });
 
     if (!subscriptionPlan) {
       // If the subscription is not found, respond with a 404 status and a message
       return res.status(404).json({ message: 'Subscription Plan not found' });
     }
+
+    let isAdminAuthorized = false;
+
     // Check if the authenticated admin is the creator of the subscription plan
-    if (subscriptionPlan.adminId !== req.user.adminId) {
-      // If not, respond with a 403 (Forbidden) status
-      return res.status(403).json({ message: 'You are not authorized to delete this subscription plan' });
+    if (subscriptionPlan.adminId === adminId) {
+      isAdminAuthorized = true;
+    }
+
+    // Check if the authenticated superadmin is authorized
+    if (!isAdminAuthorized && subscriptionPlan.superAdminId === superAdminId) {
+      isAdminAuthorized = true;
+    }
+
+    if (!isAdminAuthorized) {
+      // If not authorized, respond with a 403 (Forbidden) status
+      return res.status(403).json({ message: 'You are not authorized to update this subscription plan' });
     }
 
     // Update the subscription
@@ -128,7 +136,7 @@ export const updateSubscription = async (req, res) => {
     );
 
     // Respond with the updated subscription data
-    res.status(200).json({message: "Subscription Plan Updated Successfully", updatedSubscriptionPlan});
+    res.status(200).json({ message: "Subscription Plan Updated Successfully", updatedSubscriptionPlan });
   } catch (error) {
     if (error.name === 'ValidationError') {
       // Handle validation errors by responding with a 400 status and the error messages
