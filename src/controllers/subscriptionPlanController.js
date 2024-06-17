@@ -54,9 +54,14 @@ export const getAllAdminSubscriptions = async (req, res) => {
 }
 
 // Delete a subscription by ID
+import subscriptionPlanModel from '../models/subscriptionPlanModel.js';
+import Admin from '../models/adminModel.js';
+import SuperAdmin from '../models/superAdminModel.js';
+
 export const deleteSubscription = async (req, res) => {
   try {
     const { subscriptionPlanId } = req.params;
+    const { adminId, superAdminId } = req.user;
 
     // Find the subscription by ID
     const subscription = await subscriptionPlanModel.findOne({ subscriptionPlanId });
@@ -66,9 +71,20 @@ export const deleteSubscription = async (req, res) => {
       return res.status(404).json({ message: 'Subscription Plan not found' });
     }
 
+    let isAdminAuthorized = false;
+
     // Check if the authenticated admin is the creator of the subscription plan
-    if (subscription.adminId !== req.user.adminId) {
-      // If not, respond with a 403 (Forbidden) status
+    if (subscription.adminId === adminId) {
+      isAdminAuthorized = true;
+    }
+
+    // Check if the authenticated superadmin is authorized
+    if (!isAdminAuthorized && subscription.adminId !== adminId && subscription.superAdminId === superAdminId) {
+      isAdminAuthorized = true;
+    }
+
+    if (!isAdminAuthorized) {
+      // If not authorized, respond with a 403 (Forbidden) status
       return res.status(403).json({ message: 'You are not authorized to delete this subscription plan' });
     }
 
@@ -79,6 +95,7 @@ export const deleteSubscription = async (req, res) => {
     res.status(200).send('Subscription Plan deleted successfully');
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
+    console.error('Error deleting subscription plan:', error);
     res.status(500).send(error.message);
   }
 };
