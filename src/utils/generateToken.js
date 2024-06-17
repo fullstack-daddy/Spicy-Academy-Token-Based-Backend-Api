@@ -20,5 +20,5 @@ export const generateRefreshToken = (user) => {
     superAdminId: user.superAdminId || undefined,
     role: user.role
   };
-  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "3d" });
+  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: "4d" });
 };

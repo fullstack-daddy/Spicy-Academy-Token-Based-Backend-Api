@@ -17,7 +17,7 @@ const courseLessonSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: "Beginner",
-    enum: ["Beginner", "Intermediate", "Advanced", ]
+    enum: ["Beginner", "Amateur", "Intermediate", "Advanced", ]
   },
   lessonOrder: {
     type: Number,

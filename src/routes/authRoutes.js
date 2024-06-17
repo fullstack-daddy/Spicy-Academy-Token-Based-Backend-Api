@@ -11,6 +11,7 @@ import {
   onboardPendingAdmin,
   superAdminAddAdmin,
   superAdminSignup,
+  changePassword,
 } from "../controllers/authController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 import {  authMiddleware } from "../middleware/authMiddleware.js";
@@ -50,6 +51,13 @@ router.put(
   authMiddleware,
   roleMiddleware(["superadmin"]),
   onboardPendingAdmin
+);
+router.put(
+  "/changePassword",
+  // refreshToken,
+  authMiddleware,
+  roleMiddleware(["student","admin", "superadmin"]),
+  changePassword
 );
 router.post("/superAdminSignup", superAdminSignup);
 

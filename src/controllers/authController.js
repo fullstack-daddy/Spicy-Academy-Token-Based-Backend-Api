@@ -502,3 +502,66 @@ export const logout = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// Change password
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const studentId = req.user.studentId;
+    const adminId = req.user.adminId;
+    const superAdminId = req.user.superAdminId;
+    let user, Model, idField;
+
+    if (studentId) {
+      user = await Student.findOne({ studentId }).select("+password");
+      Model = Student;
+      idField = "studentId";
+    } else if (adminId) {
+      user = await Admin.findOne({ adminId }).select("+password");
+      Model = Admin;
+      idField = "adminId";
+    } else if (superAdminId) {
+      user = await superAdmin.findOne({ superAdminId }).select("+password");
+      Model = superAdmin;
+      idField = "superAdminId";
+    }
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Check if the current password is correct
+    const validPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!validPassword) {
+      return res.status(400).send("Current password is incorrect");
+    }
+
+    // Check if the new password is the same as the current password
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({message: "New password must be different from the current password"});
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password using findOneAndUpdate
+    const updateQuery = { [idField]: user[idField] };
+    const updateData = { password: hashedPassword };
+    
+    const updatedUser = await Model.findOneAndUpdate(
+      updateQuery,
+      updateData,
+      { new: true, runValidators: false }
+    );
+
+    if (!updatedUser) {
+      return res.status(500).send("Failed to update password");
+    }
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error('Error in changePassword:', error);
+    res.status(500).json({ message: `Error changing password: ${error.message}` });
+  }
+};

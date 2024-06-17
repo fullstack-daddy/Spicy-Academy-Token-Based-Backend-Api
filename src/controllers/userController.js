@@ -4,6 +4,37 @@ import Student from "../models/studentModel.js";
 import Admin from "../models/adminModel.js";
 import pendingAdmin from "../models/pendingAdminModel.js";
 import superAdmin from "../models/superAdminModel.js";
+import { formatDate } from "../utils/formatDate.js";
+
+// FInd a student
+export const getStudentDetails = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    // Find the student by their ID
+    const student = await Student.findOne({studentId});
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Extract the necessary details
+    const studentDetail = {
+      firstName: student.firstName,
+      lastName: student.lastName,
+      fullName: `${student.firstName} ${student.lastName}`,
+      email: student.email,
+      dateJoined: formatDate(student.createdAt),
+    };
+
+    // Respond with the student details
+    res.status(200).json(studentDetail);
+  } catch (error) {
+    // Handle errors by responding with a 500 status and the error message
+    res.status(500).send(error.message);
+  }
+};
+
 
 // Get all students
 export const getAllStudents = async (req, res) => {
