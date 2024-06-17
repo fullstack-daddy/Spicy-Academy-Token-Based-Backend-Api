@@ -69,7 +69,7 @@ export const deleteAdmin = async (req, res) => {
 
     // Find the admin by ID and role in both Admin and pendingAdmin schemas
     const admin = await Admin.findOne({ adminId, role: "admin" });
-    const pendingAdmin = await pendingAdmin.findOne({ adminId, role: "pendingAdmin" });
+    const pendingAdmin = await pendingAdmin.findOne({ adminId, role: "admin" });
 
     if (!admin && !pendingAdmin) {
       // If the admin is not found in either schema, respond with a 404 status and a message
