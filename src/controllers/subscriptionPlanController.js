@@ -5,12 +5,18 @@ import subscriptionPlanModel from "../models/subscriptionPlanModel.js";
 // Add a new subscription
 export const addSubscription = async (req, res) => {
   try {
+    // Determine the ID to use based on who is signed in
+    const userId = req.user.adminId || req.user.superAdminId;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Admin or Super Admin ID is required" });
+    }
 
     // Create a new Subscription object with the request body data
-    // and include the adminId
+    // and include the adminId or superAdminId
     const newSubscription = new subscriptionPlanModel({
       ...req.body,
-      adminId: req.user.adminId,
+      adminId: userId,
     });
 
     // Save the new subscription to the database
@@ -30,8 +36,14 @@ export const addSubscription = async (req, res) => {
 //Get all Subscription created by a Admin
 export const getAllAdminSubscriptions = async (req, res) => {
   try {
+    const userId = req.user.adminId || req.user.superAdminId;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Admin or Super Admin ID is required" });
+    }
+
     // Find all free courses created by the authenticated user
-    const getSubscriptionPlan = await subscriptionPlanModel.find({ adminId: req.user.adminId });
+    const getSubscriptionPlan = await subscriptionPlanModel.find({ adminId: userId });
     
     // Respond with the retrieved free courses
     res.status(200).send(getSubscriptionPlan);
