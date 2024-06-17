@@ -391,7 +391,7 @@ export const onboardPendingAdmin = async (req, res) => {
     if (pendingAdminData.status === 'onboarded') {
       return res.status(400).json({ message: "Admin is already onboarded" });
     }
-    console.log(pendingAdminData)
+
     // Create a new admin document
     const newAdmin = new Admin({
       adminId: pendingAdminData.adminId,
@@ -399,7 +399,7 @@ export const onboardPendingAdmin = async (req, res) => {
       lastName: pendingAdminData.lastName,
       telephone: pendingAdminData.telephone,
       email: pendingAdminData.email,
-      password: pendingAdminData.password, 
+      password: pendingAdminData.password,
       username: pendingAdminData.username,
       role: pendingAdminData.role,
       status: "onboarded",
@@ -409,11 +409,11 @@ export const onboardPendingAdmin = async (req, res) => {
     const savedAdmin = await newAdmin.save();
 
     // Update the pending admin's status
-    // pendingAdminData.status = 'onboarded';
-    // const pendingAdminDataSaved= await pendingAdminData.save();
+    pendingAdminData.status = 'onboarded';
+    await pendingAdminData.save();
 
-    res.status(200).json({ 
-      message: "Admin onboarded successfully", 
+    res.status(200).json({
+      message: "Admin onboarded successfully",
       onboarded_Admin_Details: {
         adminId: savedAdmin.adminId,
         firstName: savedAdmin.firstName,
@@ -423,7 +423,7 @@ export const onboardPendingAdmin = async (req, res) => {
         role: savedAdmin.role,
         password: savedAdmin.password,
         status: savedAdmin.status,
-      } 
+      }
     });
   } catch (error) {
     console.error("Error onboarding admin:", error);

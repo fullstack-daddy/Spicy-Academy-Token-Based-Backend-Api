@@ -59,6 +59,11 @@ const userSchema = new mongoose.Schema(
       required: false,
       default: "admin",
     },
+    status: {
+      type: String,
+      required: true,
+      enum: ["onboarded"],
+    }
   },
   { timestamps: true }
 );
