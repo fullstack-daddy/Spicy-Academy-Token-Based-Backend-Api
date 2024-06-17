@@ -2,6 +2,7 @@
 
 import Student from "../models/studentModel.js";
 import Admin from "../models/adminModel.js";
+import pendingAdmin from "../models/pendingAdminModel.js";
 import superAdmin from "../models/superAdminModel.js";
 
 // Get all students
@@ -63,21 +64,24 @@ export const deleteAdmin = async (req, res) => {
 
     if (!superadmin) {
       // If the requesting user is not a superadmin, respond with a 403 status and a message
-      return res
-        .status(403)
-        .json({ message: "Not authorized to delete admin" });
+      return res.status(403).json({ message: "Not authorized to delete admin" });
     }
 
-    // Find the admin by ID and role
+    // Find the admin by ID and role in both Admin and pendingAdmin schemas
     const admin = await Admin.findOne({ adminId, role: "admin" });
+    const pendingAdmin = await pendingAdmin.findOne({ adminId, role: "pendingAdmin" });
 
-    if (!admin) {
-      // If the admin is not found, respond with a 404 status and a message
+    if (!admin && !pendingAdmin) {
+      // If the admin is not found in either schema, respond with a 404 status and a message
       return res.status(404).json({ message: "Admin not found" });
     }
 
-    // Delete the admin from the database
-    await Admin.findOneAndDelete({ adminId, role: "admin" });
+    // Delete the admin from the appropriate collection
+    if (admin) {
+      await Admin.findOneAndDelete({ adminId, role: "admin" });
+    } else if (pendingAdmin) {
+      await pendingAdmin.findOneAndDelete({ adminId, role: "pendingAdmin" });
+    }
 
     // Respond with a success message
     res.status(200).json({ message: "Admin deleted successfully" });
@@ -87,6 +91,7 @@ export const deleteAdmin = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // Delete a Student
 export const deleteStudent = async (req, res) => {
