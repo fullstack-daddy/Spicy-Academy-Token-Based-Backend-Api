@@ -6,7 +6,8 @@ import pendingAdmin from "../models/pendingAdminModel.js";
 import superAdmin from "../models/superAdminModel.js";
 import { formatDate } from "../utils/formatDate.js";
 import multer from 'multer';
-import OTP from "../models/OTP.js"
+import OTP from "../models/OTP.js";
+import bcrypt from 'bcrypt';
 
 // Set up multer for memory storage
 const upload = multer({
@@ -31,13 +32,13 @@ function checkFileType(file, cb) {
   }
 }
 
-// FInd a student
+// Find a student
 export const getStudentDetails = async (req, res) => {
   try {
     const { studentId } = req.params;
 
     // Find the student by their ID
-    const student = await Student.findOne({studentId});
+    const student = await Student.findOne({ studentId });
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
@@ -59,7 +60,6 @@ export const getStudentDetails = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-
 
 // Get all students
 export const getAllStudents = async (req, res) => {
@@ -93,16 +93,16 @@ export const getAllAdmins = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     // Find all users in the userModel
-    const allStudent = await Student.find();
+    const allStudents = await Student.find();
 
     // Find all users in the adminModel
     const allAdmins = await Admin.find();
 
     // Combine the results
-    const allStudentAndAdmins = [...allStudent, ...allAdmins];
+    const allStudentsAndAdmins = [...allStudents, ...allAdmins];
 
     // Respond with the retrieved users
-    res.status(200).json(allStudentAndAdmins);
+    res.status(200).json(allStudentsAndAdmins);
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
@@ -148,8 +148,7 @@ export const deleteAdmin = async (req, res) => {
   }
 };
 
-
-// Delete a Student
+// Delete a student
 export const deleteStudent = async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -210,7 +209,7 @@ export const changePassword = async (req, res) => {
     // Check if the new password is the same as the current password
     const isSamePassword = await bcrypt.compare(newPassword, user.password);
     if (isSamePassword) {
-      return res.status(400).json({message: "New password must be different from the current password"});
+      return res.status(400).json({ message: "New password must be different from the current password" });
     }
 
     // Hash the new password
@@ -361,8 +360,30 @@ export const changeProfilePicture = async (req, res) => {
 // Get profile picture
 export const getProfilePicture = async (req, res) => {
   try {
-    // const user = find user logic here
-    if (user && user.profilePicture && user.profilePicture.data) {
+    const studentId = req.user.studentId;
+    const adminId = req.user.adminId;
+    const superAdminId = req.user.superAdminId;
+    let user, Model, idField;
+
+    if (studentId) {
+      user = await Student.findOne({ studentId });
+      Model = Student;
+      idField = "studentId";
+    } else if (adminId) {
+      user = await Admin.findOne({ adminId });
+      Model = Admin;
+      idField = "adminId";
+    } else if (superAdminId) {
+      user = await superAdmin.findOne({ superAdminId });
+      Model = superAdmin;
+      idField = "superAdminId";
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.profilePicture && user.profilePicture.data) {
       res.contentType(user.profilePicture.contentType);
       res.send(user.profilePicture.data);
     } else {
@@ -377,15 +398,35 @@ export const getProfilePicture = async (req, res) => {
 export const changeEmail = async (req, res) => {
   try {
     const { newEmail, otp } = req.body;
-    const role = req.user.role;
+    const studentId = req.user.studentId;
+    const adminId = req.user.adminId;
+    const superAdminId = req.user.superAdminId;
+    let Model, idField, userEmail;
 
-    // Check if the email already exists in either pendingAdmin or Admin collections
-    const existingPendingStudentEmail = await Student.findOne({ email: newEmail });
-    const existingPendingAdminEmail = await pendingAdmin.findOne({ email: newEmail });
-    const existingApprovedAdminEmail = await Admin.findOne({ email: newEmail });
-    const existingSuperAdminEmail = await superAdmin.findOne({ email: newEmail });
+    if (studentId) {
+      Model = Student;
+      idField = "studentId";
+      userEmail = studentId;
+    } else if (adminId) {
+      Model = Admin;
+      idField = "adminId";
+      userEmail = adminId;
+    } else if (superAdminId) {
+      Model = superAdmin;
+      idField = "superAdminId";
+      userEmail = superAdminId;
+    } else {
+      return res.status(400).send("Invalid role specified");
+    }
 
-    if (existingPendingStudentEmail || existingPendingAdminEmail || existingApprovedAdminEmail || existingSuperAdminEmail) {
+    // Check if the email already exists in any collection
+    const existingEmail =
+      await Student.findOne({ email: newEmail }) ||
+      await pendingAdmin.findOne({ email: newEmail }) ||
+      await Admin.findOne({ email: newEmail }) ||
+      await superAdmin.findOne({ email: newEmail });
+
+    if (existingEmail) {
       return res.status(400).send("Email already in use");
     }
 
@@ -395,24 +436,8 @@ export const changeEmail = async (req, res) => {
       return res.status(400).send("The OTP is not valid");
     }
 
-    // Determine the model based on the role
-    let model;
-    switch (role) {
-      case 'student':
-        model = Student;
-        break;
-      case 'admin':
-        model = Admin;
-        break;
-      case 'superadmin':
-        model = superAdmin;
-        break;
-      default:
-        return res.status(400).send("Invalid role specified");
-    }
-
     // Update the user's email
-    const user = await model.findOne(model);
+    const user = await Model.findOne({ [idField]: userEmail });
     if (!user) {
       return res.status(404).send("User not found");
     }
