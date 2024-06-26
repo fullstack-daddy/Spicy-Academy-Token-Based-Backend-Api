@@ -10,6 +10,7 @@ import courseRoutes from "./routes/courseRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import subPlansRoutes from "./routes/subPlansRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import assessmentRoute from "./routes/assessmentRoute.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
 import lessonRoutes from "./routes/lessonRoutes.js";
 import otpRouter from "../src/routes/otpRoutes.js";
@@ -54,6 +55,7 @@ server.use("/courses", courseRoutes);
 server.use("/assignment", assignmentRoutes);
 server.use("/lesson", lessonRoutes);
 server.use("/users", userRoutes);
+server.use("/assessment", assessmentRoute);
 
 //adding of course category
 server.use("/category", categoryRoutes);
