@@ -11,62 +11,61 @@ const userSchema = new mongoose.Schema(
     },
     firstName: {
       type: String,
-      required: "Your firstname is required",
-      max: 25,
+      required: [true, "Your firstname is required"],
+      maxlength: 25,
     },
     lastName: {
       type: String,
-      required: "Your lastname is required",
-      max: 25,
+      required: [true, "Your lastname is required"],
+      maxlength: 25,
     },
     profilePicture: {
       data: Buffer,
       contentType: String,
-      required: false,
     },
     username: {
       type: String,
-      required: "Enter a unique username",
+      required: [true, "Enter a unique username"],
       unique: true,
-      max: 25,
+      maxlength: 25,
     },
     email: {
       type: String,
-      required: "Your email is required",
+      required: [true, "Your email is required"],
       unique: true,
       lowercase: true,
       trim: true,
+      match: [/\S+@\S+\.\S+/, "Email is invalid"],
     },
     password: {
       type: String,
-      required: "Your password is required",
+      required: [true, "Your password is required"],
       select: false,
-      max: 25,
+      minlength: 8,
+      maxlength: 100,
     },
     role: {
       type: String,
-      required: false,
       enum: ["student"],
       default: "student",
     },
     telephone: {
       type: String,
-      required: false, //"Telephone number is required",
-      max: 25,
+      maxlength: 25,
       trim: true,
       unique: true,
+      match: [/^\d{10,15}$/, "Telephone number is invalid"],
     },
     googleId: {
       type: String,
       unique: false,
-      required: false,
     },
   },
   { timestamps: true }
 );
 
 // Pre-save hook to handle role and password
-userSchema.pre('save', function (next) {
+userSchema.pre("save", function (next) {
   const user = this;
 
   // Convert role to lowercase
@@ -75,7 +74,7 @@ userSchema.pre('save', function (next) {
   }
 
   // If password is not modified, skip hashing
-  if (!user.isModified('password')) {
+  if (!user.isModified("password")) {
     return next();
   }
 
@@ -91,4 +90,5 @@ userSchema.pre('save', function (next) {
     });
   });
 });
+
 export default mongoose.model("Spicy_Students", userSchema);
