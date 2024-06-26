@@ -1,24 +1,21 @@
-// courseController.js
-
 import freeCourseModel from "../models/freeCourseModel.js";
 import shopperCourseModel from "../models/shopperCourseModel.js";
+
+// Helper function to check if the user is authorized
+const isAuthorized = (user, course) => {
+  return user.role === 'superadmin' || user.adminId === course.adminId;
+};
 
 // Add a new free course
 export const addFreeCourse = async (req, res) => {
   try {
-    // Create a new FreeCourse object with the request body data and the admin ID from the authenticated user
     const newFreeCourse = new freeCourseModel({
       ...req.body,
-      adminId: req.user.adminId,
+      adminId: req.user.role === 'superadmin' ? req.body.adminId : req.user.adminId,
     });
-
-    // Save the new free course to the database
     const savedFreeCourse = await newFreeCourse.save();
-    
-    // Respond with the created free course data
     res.status(201).json({message:"Course Created Successfully", savedFreeCourse});
   } catch (error) {
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
   }
 };
@@ -26,47 +23,35 @@ export const addFreeCourse = async (req, res) => {
 // Add a new shopper course
 export const addShopperCourse = async (req, res) => {
   try {
-    // Create a new ShopperCourse object with the request body data and the admin ID from the authenticated user
     const newShopperCourse = new shopperCourseModel({
       ...req.body,
-      adminId: req.user.adminId,
+      adminId: req.user.role === 'superadmin' ? req.body.adminId : req.user.adminId,
     });
-    
-    // Save the new shopper course to the database
     const savedShopperCourse = await newShopperCourse.save();
-    
-    // Respond with the created shopper course data
     res.status(201).json({message:"Course Created Successfully", savedShopperCourse});
   } catch (error) {
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
   }
 };
 
-// Retrieve all free courses for the authenticated Admin
+// Retrieve all free courses for the authenticated Admin or Superadmin
 export const getAdminFreeCourses = async (req, res) => {
   try {
-    // Find all free courses created by the authenticated user
-    const freeCourses = await freeCourseModel.find({ adminId: req.user.adminId });
-    
-    // Respond with the retrieved free courses
+    const query = req.user.role === 'superadmin' ? {} : { adminId: req.user.adminId };
+    const freeCourses = await freeCourseModel.find(query);
     res.status(200).send(freeCourses);
   } catch (error) {
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
   }
 };
 
-// Retrieve all shopper courses for the authenticated Admin
+// Retrieve all shopper courses for the authenticated Admin or Superadmin
 export const getAdminShopperCourses = async (req, res) => {
   try {
-    // Find all shopper courses created by the authenticated Admin
-    const shopperCourses = await shopperCourseModel.find({ adminId: req.user.adminId });
-    
-    // Respond with the retrieved shopper courses
+    const query = req.user.role === 'superadmin' ? {} : { adminId: req.user.adminId };
+    const shopperCourses = await shopperCourseModel.find(query);
     res.status(200).send(shopperCourses);
   } catch (error) {
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
   }
 };
@@ -75,30 +60,24 @@ export const getAdminShopperCourses = async (req, res) => {
 export const updateAdminFreeCourse = async (req, res) => {
   try {
     const { freeCourseId } = req.params;
-
-    // Find the free course by ID
     const freeCourse = await freeCourseModel.findOne({ freeCourseId });
 
     if (!freeCourse) {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // Check if the authenticated user is the admin who created the course
-    if (freeCourse.adminId !== req.user.adminId) {
+    if (!isAuthorized(req.user, freeCourse)) {
       return res.status(403).json({ message: "Not authorized to update this course" });
     }
 
-    // Update the free course with new data
     const updatedFreeCourse = await freeCourseModel.findOneAndUpdate(
       { freeCourseId },
       req.body,
       { new: true, runValidators: true }
     );
 
-    // Respond with the updated free course data
     res.status(200).json({message:"Course Updated Successfully", updatedFreeCourse});
   } catch (error) {
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).json({ message: error.message });
   }
 };
@@ -107,30 +86,24 @@ export const updateAdminFreeCourse = async (req, res) => {
 export const updateAdminShopperCourse = async (req, res) => {
   try {
     const { shopperCourseId } = req.params;
-
-    // Find the shopper course by ID
     const shopperCourse = await shopperCourseModel.findOne({ shopperCourseId });
 
     if (!shopperCourse) {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // Check if the authenticated user is the admin who created the course
-    if (shopperCourse.adminId !== req.user.adminId) {
+    if (!isAuthorized(req.user, shopperCourse)) {
       return res.status(403).json({ message: "Not authorized to update this course" });
     }
 
-    // Update the shopper course with new data
     const updatedShopperCourse = await shopperCourseModel.findOneAndUpdate(
       { shopperCourseId },
       req.body,
       { new: true, runValidators: true }
     );
 
-    // Respond with the updated shopper course data
     res.status(200).json({message:"Course Updated Successfully", updatedShopperCourse});
   } catch (error) {
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).json({ message: error.message });
   }
 };
@@ -139,27 +112,20 @@ export const updateAdminShopperCourse = async (req, res) => {
 export const deleteFreeCourse = async (req, res) => {
   try {
     const { freeCourseId } = req.params;
-
-    // Find the free course by ID
     const deleteFreeCourse = await freeCourseModel.findOne({ freeCourseId });
 
     if (!deleteFreeCourse) {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // Check if the authenticated user is the admin who created the course
-    if (deleteFreeCourse.adminId !== req.user.adminId) {
+    if (!isAuthorized(req.user, deleteFreeCourse)) {
       return res.status(403).json({ message: "Not authorized to delete this course" });
     }
 
-    // Delete the free course from the database
     await freeCourseModel.findOneAndDelete({ freeCourseId });
-
-    // Respond with a success message
     res.status(200).json({ message: "Course deleted successfully" });
   } catch (error) {
     console.error("Error deleting free course:", error);
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -168,27 +134,20 @@ export const deleteFreeCourse = async (req, res) => {
 export const deleteShopperCourse = async (req, res) => {
   try {
     const { shopperCourseId } = req.params;
-
-    // Find the shopper course by ID
     const shopperCourse = await shopperCourseModel.findOne({ shopperCourseId });
 
     if (!shopperCourse) {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // Check if the authenticated user is the admin who created the course
-    if (shopperCourse.adminId !== req.user.adminId) {
+    if (!isAuthorized(req.user, shopperCourse)) {
       return res.status(403).json({ message: "Not authorized to delete this course" });
     }
 
-    // Delete the shopper course from the database
     await shopperCourseModel.findOneAndDelete({ shopperCourseId });
-
-    // Respond with a success message
     res.status(200).json({ message: "Course deleted successfully" });
   } catch (error) {
     console.error("Error deleting shopper course:", error);
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).json({ message: "Internal server error" });
   }
 };
