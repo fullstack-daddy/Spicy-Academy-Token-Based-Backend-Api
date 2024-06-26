@@ -1,8 +1,13 @@
 import courseLessons from "../models/courseLessonsModel.js";
 
+// Helper function to get the correct ID based on user role
+const getUserId = (user) => {
+  return user.superAdminId || user.adminId;
+};
+
 // Helper function to check if the user is authorized
 const isAuthorized = (user, lesson) => {
-  return user.role === 'superadmin' || user.adminId === lesson.adminId;
+  return user.superAdminId || user.adminId === lesson.adminId;
 };
 
 // Add a new lesson
@@ -10,7 +15,7 @@ export const addCourseLesson = async (req, res) => {
   try {
     const newLesson = new courseLessons({
       ...req.body,
-      adminId: req.user.role === 'superadmin' ? req.body.adminId : req.user.adminId,
+      adminId: getUserId(req.user),
     });
     const savedLesson = await newLesson.save();
     res.status(201).json({message:"Lesson Created Successfully", Lesson_Details: savedLesson});
@@ -22,7 +27,7 @@ export const addCourseLesson = async (req, res) => {
 // Retrieve all lessons for the authenticated Admin or Superadmin
 export const getAllAdminLessons = async (req, res) => {
   try {
-    const query = req.user.role === 'superadmin' ? {} : { adminId: req.user.adminId };
+    const query = req.user.superAdminId ? {} : { adminId: req.user.adminId };
     const allLessons = await courseLessons.find(query);
     res.status(200).send(allLessons);
   } catch (error) {
@@ -33,7 +38,7 @@ export const getAllAdminLessons = async (req, res) => {
 // Retrieve all free lessons for the authenticated Admin or Superadmin
 export const getAdminFreeLessons = async (req, res) => {
   try {
-    const query = req.user.role === 'superadmin' 
+    const query = req.user.superAdminId 
       ? { lessonSubscriptionCategory: "free" } 
       : { adminId: req.user.adminId, lessonSubscriptionCategory: "free" };
     const freeLessons = await courseLessons.find(query);
@@ -46,7 +51,7 @@ export const getAdminFreeLessons = async (req, res) => {
 // Retrieve all shopper Lessons for the authenticated Admin or Superadmin
 export const getAdminShopperLessons = async (req, res) => {
   try {
-    const query = req.user.role === 'superadmin' 
+    const query = req.user.superAdminId 
       ? { lessonSubscriptionCategory: "paid" } 
       : { adminId: req.user.adminId, lessonSubscriptionCategory: "paid" };
     const shopperLessons = await courseLessons.find(query);
