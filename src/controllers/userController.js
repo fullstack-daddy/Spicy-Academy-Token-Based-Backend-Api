@@ -6,6 +6,7 @@ import pendingAdmin from "../models/pendingAdminModel.js";
 import superAdmin from "../models/superAdminModel.js";
 import { formatDate } from "../utils/formatDate.js";
 import multer from 'multer';
+import OTP from "../models/OTP.js"
 
 // Set up multer for memory storage
 const upload = multer({
@@ -369,5 +370,57 @@ export const getProfilePicture = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send('Error retrieving profile picture');
+  }
+};
+
+// Change email
+export const changeEmail = async (req, res) => {
+  try {
+    const { newEmail, otp } = req.body;
+    const role = req.user.role;
+
+    // Check if the email already exists in either pendingAdmin or Admin collections
+    const existingPendingStudentEmail = await Student.findOne({ email: newEmail });
+    const existingPendingAdminEmail = await pendingAdmin.findOne({ email: newEmail });
+    const existingApprovedAdminEmail = await Admin.findOne({ email: newEmail });
+    const existingSuperAdminEmail = await superAdmin.findOne({ email: newEmail });
+
+    if (existingPendingStudentEmail || existingPendingAdminEmail || existingApprovedAdminEmail || existingSuperAdminEmail) {
+      return res.status(400).send("Email already in use");
+    }
+
+    // Find the most recent OTP for the email
+    const response = await OTP.find({ email: newEmail }).sort({ createdAt: -1 }).limit(1);
+    if (response.length === 0 || otp !== response[0].otp) {
+      return res.status(400).send("The OTP is not valid");
+    }
+
+    // Determine the model based on the role
+    let model;
+    switch (role) {
+      case 'student':
+        model = Student;
+        break;
+      case 'admin':
+        model = Admin;
+        break;
+      case 'superadmin':
+        model = superAdmin;
+        break;
+      default:
+        return res.status(400).send("Invalid role specified");
+    }
+
+    // Update the user's email
+    const user = await model.findOne(model);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    user.email = newEmail;
+    await user.save();
+
+    res.status(200).send("Email updated successfully");
+  } catch (error) {
+    res.status(500).json({ message: `Error changing email: ${error.message}` });
   }
 };
