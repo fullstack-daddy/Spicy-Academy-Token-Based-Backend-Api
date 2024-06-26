@@ -1,9 +1,14 @@
 import freeCourseModel from "../models/freeCourseModel.js";
 import shopperCourseModel from "../models/shopperCourseModel.js";
 
+// Helper function to get the correct ID based on user role
+const getUserId = (user) => {
+  return user.superAdminId || user.adminId;
+};
+
 // Helper function to check if the user is authorized
 const isAuthorized = (user, course) => {
-  return user.role === 'superadmin' || user.adminId === course.adminId;
+  return user.superAdminId || user.adminId === course.adminId;
 };
 
 // Add a new free course
@@ -11,7 +16,7 @@ export const addFreeCourse = async (req, res) => {
   try {
     const newFreeCourse = new freeCourseModel({
       ...req.body,
-      adminId: req.user.role === 'superadmin' ? req.body.adminId : req.user.adminId,
+      adminId: getUserId(req.user),
     });
     const savedFreeCourse = await newFreeCourse.save();
     res.status(201).json({message:"Course Created Successfully", savedFreeCourse});
@@ -25,7 +30,7 @@ export const addShopperCourse = async (req, res) => {
   try {
     const newShopperCourse = new shopperCourseModel({
       ...req.body,
-      adminId: req.user.role === 'superadmin' ? req.body.adminId : req.user.adminId,
+      adminId: getUserId(req.user),
     });
     const savedShopperCourse = await newShopperCourse.save();
     res.status(201).json({message:"Course Created Successfully", savedShopperCourse});
@@ -37,7 +42,7 @@ export const addShopperCourse = async (req, res) => {
 // Retrieve all free courses for the authenticated Admin or Superadmin
 export const getAdminFreeCourses = async (req, res) => {
   try {
-    const query = req.user.role === 'superadmin' ? {} : { adminId: req.user.adminId };
+    const query = req.user.superAdminId ? {} : { adminId: req.user.adminId };
     const freeCourses = await freeCourseModel.find(query);
     res.status(200).send(freeCourses);
   } catch (error) {
@@ -48,7 +53,7 @@ export const getAdminFreeCourses = async (req, res) => {
 // Retrieve all shopper courses for the authenticated Admin or Superadmin
 export const getAdminShopperCourses = async (req, res) => {
   try {
-    const query = req.user.role === 'superadmin' ? {} : { adminId: req.user.adminId };
+    const query = req.user.superAdminId ? {} : { adminId: req.user.adminId };
     const shopperCourses = await shopperCourseModel.find(query);
     res.status(200).send(shopperCourses);
   } catch (error) {
