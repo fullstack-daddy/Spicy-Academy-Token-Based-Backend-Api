@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema(
       required: "Your lastname is required",
       max: 25,
     },
+    profilePicture: {
+      data: Buffer,
+      contentType: String,
+      required: false,
+    },
     username: {
       type: String,
       required: "Enter a unique username",

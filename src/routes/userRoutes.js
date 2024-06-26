@@ -8,6 +8,8 @@ import {
   getAllUsers,
   deleteAdmin,
   deleteStudent,
+  changePassword,
+  changeProfilePicture,
  
 } from "../controllers/userController.js";
 // import { refreshToken } from "../middleware/authMiddleware.js";
@@ -56,6 +58,20 @@ router.delete(
   authMiddleware,
   roleMiddleware(["admin", "superadmin"]),
   deleteStudent
+);
+router.put(
+  "/changePassword",
+  // refreshToken,
+  authMiddleware,
+  roleMiddleware(["student","admin", "superadmin"]),
+  changePassword
+);
+router.put(
+  "/changeProfilePicture",
+  // refreshToken,
+  authMiddleware,
+  roleMiddleware(["student","admin", "superadmin"]),
+  changeProfilePicture
 );
 
 export default router;

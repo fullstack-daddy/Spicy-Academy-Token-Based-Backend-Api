@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema(
       max: 25,
       trim: true,
     },
+    profilePicture: {
+      data: Buffer,
+      contentType: String,
+      required: false,
+    },
     telephone: {
       type: String,
       required: false, //"Telephone number is required",

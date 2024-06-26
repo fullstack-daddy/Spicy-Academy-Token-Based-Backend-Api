@@ -52,13 +52,7 @@ router.put(
   roleMiddleware(["superadmin"]),
   onboardPendingAdmin
 );
-router.put(
-  "/changePassword",
-  // refreshToken,
-  authMiddleware,
-  roleMiddleware(["student","admin", "superadmin"]),
-  changePassword
-);
+
 router.post("/superAdminSignup", superAdminSignup);
 
 export default router;
