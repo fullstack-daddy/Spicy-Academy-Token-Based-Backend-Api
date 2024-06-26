@@ -67,6 +67,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["onboarded"],
+      default: "onboarded",
     }
   },
   { timestamps: true }
