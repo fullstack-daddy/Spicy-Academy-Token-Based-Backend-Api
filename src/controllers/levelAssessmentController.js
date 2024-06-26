@@ -12,7 +12,7 @@ const predefinedAnswers = [
 ];
 
 // Define the levelAssessment controller function
-export const levelAssessment = async (req, res) => {
+ const levelAssessment = async (req, res) => {
   try {
     const {
       assessmentQuestion1,
@@ -76,3 +76,5 @@ export const levelAssessment = async (req, res) => {
     res.status(500).json({ message: `Error in level assessment: ${error.message}` });
   }
 };
+
+export default levelAssessment
