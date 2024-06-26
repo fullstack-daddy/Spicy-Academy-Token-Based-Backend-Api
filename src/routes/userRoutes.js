@@ -12,6 +12,7 @@ import {
   changeProfilePicture,
   changeName,
   changeEmail,
+  getProfilePicture,
  
 } from "../controllers/userController.js";
 // import { refreshToken } from "../middleware/authMiddleware.js";
@@ -46,6 +47,13 @@ router.get(
   authMiddleware,
   roleMiddleware(["superadmin"]),
   getAllUsers
+);
+router.get(
+  "/getProfilePicture",
+  // refreshToken,
+  authMiddleware,
+  roleMiddleware(["student","admin", "superadmin"]),
+  getProfilePicture
 );
 router.delete(
   "/deleteAdmin/:adminId",
