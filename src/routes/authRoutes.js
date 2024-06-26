@@ -11,7 +11,6 @@ import {
   onboardPendingAdmin,
   superAdminAddAdmin,
   superAdminSignup,
-  changePassword,
 } from "../controllers/authController.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 import {  authMiddleware } from "../middleware/authMiddleware.js";
