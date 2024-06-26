@@ -10,6 +10,7 @@ import {
   deleteStudent,
   changePassword,
   changeProfilePicture,
+  changeName,
  
 } from "../controllers/userController.js";
 // import { refreshToken } from "../middleware/authMiddleware.js";
@@ -72,6 +73,13 @@ router.put(
   authMiddleware,
   roleMiddleware(["student","admin", "superadmin"]),
   changeProfilePicture
+);
+router.put(
+  "/changeName",
+  // refreshToken,
+  authMiddleware,
+  roleMiddleware(["student","admin", "superadmin"]),
+  changeName
 );
 
 export default router;
