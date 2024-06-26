@@ -486,9 +486,6 @@ export const deleteAccount = async (req, res) => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    // Log the reason for account deletion (optional, for record-keeping)
-    console.log(`User ${user[idField]} (role: ${req.user.role}) is deleting their account for reason: ${reason}`);
-
     // Delete the user account
     await Model.findOneAndDelete({ [idField]: user[idField] });
 
