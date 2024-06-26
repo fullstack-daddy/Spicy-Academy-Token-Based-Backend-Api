@@ -13,6 +13,7 @@ import {
   changeName,
   changeEmail,
   getProfilePicture,
+  deleteAccount,
  
 } from "../controllers/userController.js";
 // import { refreshToken } from "../middleware/authMiddleware.js";
@@ -61,6 +62,13 @@ router.delete(
   authMiddleware,
   roleMiddleware(["superadmin"]),
   deleteAdmin
+);
+router.delete(
+  "/deleteAccount",
+  // refreshToken,
+  authMiddleware,
+  roleMiddleware(["student","admin", "superadmin"]),
+  deleteAccount
 );
 router.delete(
   "/deleteStudent/:studentId",

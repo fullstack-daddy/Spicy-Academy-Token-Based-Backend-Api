@@ -449,3 +449,52 @@ export const changeEmail = async (req, res) => {
     res.status(500).json({ message: `Error changing email: ${error.message}` });
   }
 };
+
+// Function to delete account
+export const deleteAccount = async (req, res) => {
+  try {
+    const { password, reason } = req.body;
+    const studentId = req.user.studentId;
+    const adminId = req.user.adminId;
+    const superAdminId = req.user.superAdminId;
+    let user, Model, idField;
+
+    // Determine the user model based on the role and ID
+    if (studentId) {
+      user = await Student.findOne({ studentId }).select("+password");
+      Model = Student;
+      idField = "studentId";
+    } else if (adminId) {
+      user = await Admin.findOne({ adminId }).select("+password");
+      Model = Admin;
+      idField = "adminId";
+    } else if (superAdminId) {
+      user = await superAdmin.findOne({ superAdminId }).select("+password");
+      Model = superAdmin;
+      idField = "superAdminId";
+    } else {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if the provided password is correct
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Incorrect password" });
+    }
+
+    // Log the reason for account deletion (optional, for record-keeping)
+    console.log(`User ${user[idField]} (role: ${req.user.role}) is deleting their account for reason: ${reason}`);
+
+    // Delete the user account
+    await Model.findOneAndDelete({ [idField]: user[idField] });
+
+    res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error) {
+    console.error('Error in deleteAccount:', error);
+    res.status(500).json({ message: `Error deleting account: ${error.message}` });
+  }
+};
