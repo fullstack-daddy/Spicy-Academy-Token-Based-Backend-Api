@@ -66,7 +66,7 @@ router.put(
   roleMiddleware(["student","admin", "superadmin"]),
   changePassword
 );
-router.post(
+router.put(
   "/changeProfilePicture",
   // refreshToken,
   authMiddleware,
