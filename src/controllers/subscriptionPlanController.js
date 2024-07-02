@@ -114,7 +114,7 @@ export const updateSubscription = async (req, res) => {
     let isAdminAuthorized = false;
 
     // Check if the authenticated admin is the creator of the subscription plan
-    if (subscriptionPlan.adminId === adminId) {
+    if (subscriptionPlan.adminId === adminId || subscriptionPlan.adminId === superAdminId) {
       isAdminAuthorized = true;
     }
 
