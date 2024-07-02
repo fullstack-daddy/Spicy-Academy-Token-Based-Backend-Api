@@ -70,7 +70,7 @@ export const deleteSubscription = async (req, res) => {
     let isAdminAuthorized = false;
 
     // Check if the authenticated admin is the creator of the subscription plan
-    if (subscription.adminId === adminId) {
+    if (subscription.adminId === adminId || subscription.adminId === superAdminId) {
       isAdminAuthorized = true;
     }
 
