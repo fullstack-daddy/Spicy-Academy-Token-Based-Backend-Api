@@ -68,29 +68,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       enum: ["onboarded"],
       default: "onboarded",
+    },
+    priviledges: {
+      type: array,
+      enum: ["Create Free Course","Edit Free Course", "Delete Free Course", "Create Shopper Course", "Edit Shopper Course", "Delete Shopper Course", "Create Subscription Plan","Edit Subscription Plan", "Delete Subscription Plan", "Create Category","Edit Category", "Delete Category", "Create Course","Edit Course", "Delete Course","Create Lesson","Edit Lesson", "Delete Lesson",],
+      default: "onboarded",
     }
   },
   { timestamps: true }
 );
 
-// Pre-save hook to handle role and password
-// userSchema.pre('save', function (next) {
-//   const user = this;
-
-//   // If password is not modified, skip hashing
-//   if (!user.isModified('password')) {
-//     return next();
-//   }
-
-//   // Generate salt and hash the password
-//   bcrypt.genSalt(10, (err, salt) => {
-//     if (err) return next(err);
-
-//     bcrypt.hash(user.password, salt, (err, hash) => {
-//       if (err) return next(err);
-//       user.password = hash;
-//       next();
-//     });
-//   });
-// });
 export default mongoose.model("Spicy_Admins", userSchema);
