@@ -5,9 +5,9 @@ import Admin from "../models/adminModel.js";
 import pendingAdmin from "../models/pendingAdminModel.js";
 import superAdmin from "../models/superAdminModel.js";
 import { formatDate } from "../utils/formatDate.js";
-import multer from 'multer';
+import multer from "multer";
 import OTP from "../models/OTP.js";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 // Set up multer for memory storage
 const upload = multer({
@@ -15,8 +15,8 @@ const upload = multer({
   limits: { fileSize: 5000000 }, // Limit file size to 5MB
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
-  }
-}).single('profilePicture');
+  },
+}).single("profilePicture");
 
 // Check file type
 function checkFileType(file, cb) {
@@ -28,7 +28,7 @@ function checkFileType(file, cb) {
   if (mimetype) {
     return cb(null, true);
   } else {
-    cb('Error: Images Only!');
+    cb("Error: Images Only!");
   }
 }
 
@@ -64,11 +64,17 @@ export const getStudentDetails = async (req, res) => {
 // Get all students
 export const getAllStudents = async (req, res) => {
   try {
-    // Find all users with the role of 'student'
+    // Find all students in the studentModel with the role of 'student'
     const allStudents = await Student.find({ role: "student" });
 
-    // Respond with the retrieved students
-    res.status(200).json(allStudents);
+    // Count the number of students
+    const studentCount = allStudents.length;
+
+    // Respond with the retrieved students and count
+    res.status(200).json({
+      studentCount,
+      allStudents,
+    });
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
@@ -78,11 +84,17 @@ export const getAllStudents = async (req, res) => {
 // Get all admins
 export const getAllAdmins = async (req, res) => {
   try {
-    // Find all users with the role of 'admin'
+    // Find all admins in the adminModel with the role of 'admin'
     const allAdmins = await Admin.find({ role: "admin" });
 
-    // Respond with the retrieved admins
-    res.status(200).json(allAdmins);
+    // Count the number of admins
+    const adminCount = allAdmins.length;
+
+    // Respond with the retrieved admins and count
+    res.status(200).json({
+      adminCount,
+      allAdmins,
+    });
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
@@ -92,17 +104,23 @@ export const getAllAdmins = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    // Find all users in the userModel
+    // Find all students in the studentModel
     const allStudents = await Student.find();
 
-    // Find all users in the adminModel
+    // Find all admins in the adminModel
     const allAdmins = await Admin.find();
 
-    // Combine the results
-    const allStudentsAndAdmins = [...allStudents, ...allAdmins];
+    // Count the number of students and admins
+    const studentCount = allStudents.length;
+    const adminCount = allAdmins.length;
 
-    // Respond with the retrieved users
-    res.status(200).json(allStudentsAndAdmins);
+    // Respond with the retrieved users and counts
+    res.status(200).json({
+      studentCount,
+      adminCount,
+      allStudents,
+      allAdmins,
+    });
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
@@ -116,16 +134,24 @@ export const deleteAdmin = async (req, res) => {
     const { superadminId } = req.user;
 
     // Find the superadmin
-    const superadmin = await superAdmin.findOne({ superadminId, role: "superadmin" });
+    const superadmin = await superAdmin.findOne({
+      superadminId,
+      role: "superadmin",
+    });
 
     if (!superadmin) {
       // If the requesting user is not a superadmin, respond with a 403 status and a message
-      return res.status(403).json({ message: "Not authorized to delete admin" });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete admin" });
     }
 
     // Find the admin by ID and role in both Admin and pendingAdmin schemas
     const findAdmin = await Admin.findOne({ adminId, role: "admin" });
-    const findPendingAdmin = await pendingAdmin.findOne({ adminId, role: "admin" });
+    const findPendingAdmin = await pendingAdmin.findOne({
+      adminId,
+      role: "admin",
+    });
 
     if (!findAdmin && !findPendingAdmin) {
       // If the admin is not found in either schema, respond with a 404 status and a message
@@ -149,29 +175,32 @@ export const deleteAdmin = async (req, res) => {
 };
 
 // Delete a student
-export const deleteStudent = async (req, res) => {
-  try {
-    const { studentId } = req.params;
+export const deleteStudent = [
+  checkPrivilege("Remove Student Account"),
+  async (req, res) => {
+    try {
+      const { studentId } = req.params;
 
-    // Find the user by ID
-    const user = await Student.findOne({ studentId });
+      // Find the user by ID
+      const user = await Student.findOne({ studentId });
 
-    if (!user) {
-      // If the user is not found, respond with a 404 status and a message
-      return res.status(404).json({ message: "User not found" });
+      if (!user) {
+        // If the user is not found, respond with a 404 status and a message
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Delete the user from the database
+      await Student.findOneAndDelete({ studentId });
+
+      // Respond with a success message
+      res.status(200).json({ message: "Student deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      // Handle errors by responding with a 500 status and the error message
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    // Delete the user from the database
-    await Student.findOneAndDelete({ studentId });
-
-    // Respond with a success message
-    res.status(200).json({ message: "Student deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    // Handle errors by responding with a 500 status and the error message
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+  },
+];
 
 // Change password
 export const changePassword = async (req, res) => {
@@ -209,7 +238,11 @@ export const changePassword = async (req, res) => {
     // Check if the new password is the same as the current password
     const isSamePassword = await bcrypt.compare(newPassword, user.password);
     if (isSamePassword) {
-      return res.status(400).json({ message: "New password must be different from the current password" });
+      return res
+        .status(400)
+        .json({
+          message: "New password must be different from the current password",
+        });
     }
 
     // Hash the new password
@@ -218,12 +251,11 @@ export const changePassword = async (req, res) => {
     // Update the user's password using findOneAndUpdate
     const updateQuery = { [idField]: user[idField] };
     const updateData = { password: hashedPassword };
-    
-    const updatedUser = await Model.findOneAndUpdate(
-      updateQuery,
-      updateData,
-      { new: true, runValidators: false }
-    );
+
+    const updatedUser = await Model.findOneAndUpdate(updateQuery, updateData, {
+      new: true,
+      runValidators: false,
+    });
 
     if (!updatedUser) {
       return res.status(500).send("Failed to update password");
@@ -231,8 +263,10 @@ export const changePassword = async (req, res) => {
 
     res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
-    console.error('Error in changePassword:', error);
-    res.status(500).json({ message: `Error changing password: ${error.message}` });
+    console.error("Error in changePassword:", error);
+    res
+      .status(500)
+      .json({ message: `Error changing password: ${error.message}` });
   }
 };
 
@@ -281,15 +315,15 @@ export const changeName = async (req, res) => {
       return res.status(500).json({ message: "Failed to update name" });
     }
 
-    res.status(200).json({ 
-      message: "Name updated successfully", 
+    res.status(200).json({
+      message: "Name updated successfully",
       updatedName: {
         firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName
-      }
+        lastName: updatedUser.lastName,
+      },
     });
   } catch (error) {
-    console.error('Error in changeName:', error);
+    console.error("Error in changeName:", error);
     res.status(500).json({ message: `Error changing name: ${error.message}` });
   }
 };
@@ -334,25 +368,29 @@ export const changeProfilePicture = async (req, res) => {
 
       const updatedUser = await Model.findOneAndUpdate(
         { [idField]: user[idField] },
-        { 
+        {
           profilePicture: {
             data: req.file.buffer,
-            contentType: req.file.mimetype
-          }
+            contentType: req.file.mimetype,
+          },
         },
         { new: true, runValidators: true }
       );
 
       if (!updatedUser) {
-        return res.status(500).json({ message: "Failed to update profile picture" });
+        return res
+          .status(500)
+          .json({ message: "Failed to update profile picture" });
       }
 
-      res.status(200).json({ 
-        message: "Profile picture updated successfully"
+      res.status(200).json({
+        message: "Profile picture updated successfully",
       });
     } catch (error) {
-      console.error('Error in changeProfilePicture:', error);
-      res.status(500).json({ message: `Error changing profile picture: ${error.message}` });
+      console.error("Error in changeProfilePicture:", error);
+      res
+        .status(500)
+        .json({ message: `Error changing profile picture: ${error.message}` });
     }
   });
 };
@@ -387,10 +425,10 @@ export const getProfilePicture = async (req, res) => {
       res.contentType(user.profilePicture.contentType);
       res.send(user.profilePicture.data);
     } else {
-      res.status(404).send('No profile picture found');
+      res.status(404).send("No profile picture found");
     }
   } catch (error) {
-    res.status(500).send('Error retrieving profile picture');
+    res.status(500).send("Error retrieving profile picture");
   }
 };
 
@@ -421,17 +459,19 @@ export const changeEmail = async (req, res) => {
 
     // Check if the email already exists in any collection
     const existingEmail =
-      await Student.findOne({ email: newEmail }) ||
-      await pendingAdmin.findOne({ email: newEmail }) ||
-      await Admin.findOne({ email: newEmail }) ||
-      await superAdmin.findOne({ email: newEmail });
+      (await Student.findOne({ email: newEmail })) ||
+      (await pendingAdmin.findOne({ email: newEmail })) ||
+      (await Admin.findOne({ email: newEmail })) ||
+      (await superAdmin.findOne({ email: newEmail }));
 
     if (existingEmail) {
       return res.status(400).send("Email already in use");
     }
 
     // Find the most recent OTP for the email
-    const response = await OTP.find({ email: newEmail }).sort({ createdAt: -1 }).limit(1);
+    const response = await OTP.find({ email: newEmail })
+      .sort({ createdAt: -1 })
+      .limit(1);
     if (response.length === 0 || otp !== response[0].otp) {
       return res.status(400).send("The OTP is not valid");
     }
@@ -491,7 +531,9 @@ export const deleteAccount = async (req, res) => {
 
     res.status(200).json({ message: "Account deleted successfully" });
   } catch (error) {
-    console.error('Error in deleteAccount:', error);
-    res.status(500).json({ message: `Error deleting account: ${error.message}` });
+    console.error("Error in deleteAccount:", error);
+    res
+      .status(500)
+      .json({ message: `Error deleting account: ${error.message}` });
   }
 };

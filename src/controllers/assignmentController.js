@@ -2,6 +2,7 @@ import pendingAssignmentModel from "../models/pendingAssignments.js";
 import reviewedAssignmentModel from "../models/reviewedAssignments.js";
 import studentModel from "../models/studentModel.js";
 import courseLessonModel from "../models/courseLessonsModel.js";
+import checkPrivilege from "../middleware/checkPrivilege.js";
 
 export const studentAssignmentSubmit = async (req, res) => {
   try {
@@ -55,73 +56,76 @@ export const studentAssignmentSubmit = async (req, res) => {
   }
 };
 
-export const teacherAssignmentGradingSubmit = async (req, res) => {
-  try {
-    const { studentId, assignmentId } = req.params;
-    const {
-      assignment1TutorGrade,
-      assignment2TutorGrade,
-      assignment3TutorGrade,
-      assignment1TutorRemark,
-      assignment2TutorRemark,
-      assignment3TutorRemark,
-    } = req.body;
+export const teacherAssignmentGradingSubmit = [
+  checkPrivilege("Grade Assignment"),
+  async (req, res) => {
+    try {
+      const { studentId, assignmentId } = req.params;
+      const {
+        assignment1TutorGrade,
+        assignment2TutorGrade,
+        assignment3TutorGrade,
+        assignment1TutorRemark,
+        assignment2TutorRemark,
+        assignment3TutorRemark,
+      } = req.body;
 
-    // Find the student details from the database using the studentId
-    const studentDetails = await studentModel.findOne({ studentId });
+      // Find the student details from the database using the studentId
+      const studentDetails = await studentModel.findOne({ studentId });
 
-    // If student details are not found, return a 404 error
-    if (!studentDetails) {
-      return res.status(404).json({ message: "Student not found" });
+      // If student details are not found, return a 404 error
+      if (!studentDetails) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      // Find the pending assignment details
+      const findStudentAssignment = await pendingAssignmentModel.findOne({
+        studentId,
+        assignmentId,
+      });
+
+      // If assignment details are not found, return a 404 error
+      if (!findStudentAssignment) {
+        return res.status(404).json({ message: "Assignment not found!" });
+      }
+
+      // If the assignment is already reviewed, return a 400 error
+      if (findStudentAssignment.status === "reviewed") {
+        return res.status(400).json({ message: "Assignment already graded!" });
+      }
+
+      // Create a new reviewed assignment object
+      const savePendingAssignment = new reviewedAssignmentModel({
+        adminId: req.user.adminId,
+        assignmentId: findStudentAssignment.assignmentId,
+        studentName: `${studentDetails.firstName} ${studentDetails.lastName}`,
+        lessonTitle: findStudentAssignment.lessonTitle,
+        lessonLevel: findStudentAssignment.lessonLevel,
+        studentId: studentDetails.studentId,
+        studentEmail: studentDetails.email,
+        assignmentStudentSubmissionDate:
+          findStudentAssignment.assignmentStudentSubmissionDate, // Ensure this field is populated
+        assignment1TutorGrade,
+        assignment2TutorGrade,
+        assignment3TutorGrade,
+        assignment1TutorRemark,
+        assignment2TutorRemark,
+        assignment3TutorRemark,
+        status: "reviewed",
+      });
+
+      // Save the new reviewed assignment
+      const savedTeacherAssignmentGrading = await savePendingAssignment.save();
+
+      res.status(200).json({
+        message: "Student Graded Successfully",
+        savedTeacherAssignmentGrading,
+      });
+    } catch (error) {
+      res.status(500).send(error.message);
     }
-
-    // Find the pending assignment details
-    const findStudentAssignment = await pendingAssignmentModel.findOne({
-      studentId,
-      assignmentId,
-    });
-
-    // If assignment details are not found, return a 404 error
-    if (!findStudentAssignment) {
-      return res.status(404).json({ message: "Assignment not found!" });
-    }
-
-    // If the assignment is already reviewed, return a 400 error
-    if (findStudentAssignment.status === "reviewed") {
-      return res.status(400).json({ message: "Assignment already graded!" });
-    }
-
-    // Create a new reviewed assignment object
-    const savePendingAssignment = new reviewedAssignmentModel({
-      adminId: req.user.adminId,
-      assignmentId: findStudentAssignment.assignmentId,
-      studentName: `${studentDetails.firstName} ${studentDetails.lastName}`,
-      lessonTitle: findStudentAssignment.lessonTitle,
-      lessonLevel: findStudentAssignment.lessonLevel,
-      studentId: studentDetails.studentId,
-      studentEmail: studentDetails.email,
-      assignmentStudentSubmissionDate: findStudentAssignment.assignmentStudentSubmissionDate, // Ensure this field is populated
-      assignment1TutorGrade,
-      assignment2TutorGrade,
-      assignment3TutorGrade,
-      assignment1TutorRemark,
-      assignment2TutorRemark,
-      assignment3TutorRemark,
-      status: "reviewed",
-    });
-
-    // Save the new reviewed assignment
-    const savedTeacherAssignmentGrading = await savePendingAssignment.save();
-
-    res.status(200).json({
-      message: "Student Graded Successfully",
-      savedTeacherAssignmentGrading,
-    });
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-};
-
+  },
+];
 
 export const getAllPendingAssignments = async (req, res) => {
   try {

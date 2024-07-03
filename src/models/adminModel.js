@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
-    
+
     username: {
       type: String,
       required: false,
@@ -51,12 +51,12 @@ const userSchema = new mongoose.Schema(
     //   type: String,
     //   required: false,
     //   select: true,
-    //   default: uuidv4, 
+    //   default: uuidv4,
     // },
     password: {
       type: String,
       required: "Password is required",
-      select: false, 
+      select: false,
     },
     role: {
       type: String,
@@ -71,9 +71,30 @@ const userSchema = new mongoose.Schema(
     },
     priviledges: {
       type: [String],
-      enum: ["Create Free Course","Edit Free Course", "Delete Free Course", "Create Shopper Course", "Edit Shopper Course", "Delete Shopper Course", "Create Subscription Plan","Edit Subscription Plan", "Delete Subscription Plan", "Create Category","Edit Category", "Delete Category", "Create Course","Edit Course", "Delete Course","Create Lesson","Edit Lesson", "Delete Lesson",],
+      enum: [
+        "Create Free Course",
+        "Edit Free Course",
+        "Delete Free Course",
+        "Create Shopper Course",
+        "Edit Shopper Course",
+        "Delete Shopper Course",
+        "Create Subscription Plan",
+        "Edit Subscription Plan",
+        "Delete Subscription Plan",
+        "Create Category",
+        "Edit Category",
+        "Delete Category",
+        "Create Course",
+        "Edit Course",
+        "Delete Course",
+        "Create Lesson",
+        "Edit Lesson",
+        "Delete Lesson",
+        "Grade Assignment",
+        "Remove Student Account",
+      ],
       default: ["Create Free Course"],
-    }
+    },
   },
   { timestamps: true }
 );
