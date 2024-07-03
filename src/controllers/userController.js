@@ -8,6 +8,7 @@ import { formatDate } from "../utils/formatDate.js";
 import multer from "multer";
 import OTP from "../models/OTP.js";
 import bcrypt from "bcrypt";
+import checkPrivilege from "../middleware/checkPrivilege.js";
 
 // Set up multer for memory storage
 const upload = multer({
