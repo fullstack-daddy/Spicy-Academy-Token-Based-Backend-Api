@@ -17,20 +17,43 @@ export const addFreeCourse = [
   checkPrivilege("Create Free Course"),
   async (req, res) => {
     try {
+      // Check if user data is valid
+      if (!req.user || (!req.user.superAdminId && !req.user.adminId)) {
+        return res.status(400).json({ message: "Invalid user data" });
+      }
+
+      // Log user data for debugging
+      console.log('req.user:', req.user);
+      
+      const adminId = getUserId(req.user);
+      console.log('adminId:', adminId);
+
+      // Create new course
       const newFreeCourse = new freeCourseModel({
         ...req.body,
-        adminId: getUserId(req.user),
+        adminId: adminId,
       });
+
+      // Save the course
       const savedFreeCourse = await newFreeCourse.save();
-      res
-        .status(201)
-        .json({ message: "Course Created Successfully", savedFreeCourse });
+
+      // Send success response
+      res.status(201).json({ 
+        message: "Course Created Successfully", 
+        savedFreeCourse 
+      });
     } catch (error) {
-      res.status(500).send(error.message);
+      // Log the full error for debugging
+      console.error('Error in addFreeCourse:', error);
+
+      // Send error response
+      res.status(500).json({ 
+        message: "An error occurred while creating the course",
+        error: error.message 
+      });
     }
   },
 ];
-
 // Add a new shopper course
 export const addShopperCourse = [
   checkPrivilege("Create Shopper Course"),
