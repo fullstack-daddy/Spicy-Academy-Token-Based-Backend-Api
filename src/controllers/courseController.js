@@ -21,13 +21,8 @@ export const addFreeCourse = [
       if (!req.user || (!req.user.superAdminId && !req.user.adminId)) {
         return res.status(400).json({ message: "Invalid user data" });
       }
-
-      // Log user data for debugging
-      console.log('req.user:', req.user);
       
       const adminId = getUserId(req.user);
-      console.log('adminId:', adminId);
-
       // Create new course
       const newFreeCourse = new freeCourseModel({
         ...req.body,
@@ -43,9 +38,6 @@ export const addFreeCourse = [
         savedFreeCourse 
       });
     } catch (error) {
-      // Log the full error for debugging
-      console.error('Error in addFreeCourse:', error);
-
       // Send error response
       res.status(500).json({ 
         message: "An error occurred while creating the course",

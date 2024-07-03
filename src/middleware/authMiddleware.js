@@ -74,7 +74,28 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(accessToken, JWT_SECRET);
-    req.user = decoded;
+    
+    let user;
+    switch (decoded.role) {
+      case "student":
+        user = await Student.findOne({ studentId: decoded.studentId });
+        break;
+      case "admin":
+        user = await Admin.findOne({ adminId: decoded.adminId });
+        break;
+      case "superadmin":
+        user = await superAdmin.findOne({ superAdminId: decoded.superAdminId });
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid user role in token" });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Convert Mongoose document to a plain JavaScript object
+    req.user = user.toObject();
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
