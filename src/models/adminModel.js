@@ -72,7 +72,7 @@ const userSchema = new mongoose.Schema(
     priviledges: {
       type: array,
       enum: ["Create Free Course","Edit Free Course", "Delete Free Course", "Create Shopper Course", "Edit Shopper Course", "Delete Shopper Course", "Create Subscription Plan","Edit Subscription Plan", "Delete Subscription Plan", "Create Category","Edit Category", "Delete Category", "Create Course","Edit Course", "Delete Course","Create Lesson","Edit Lesson", "Delete Lesson",],
-      default: "onboarded",
+      default: ["Create Free Course"],
     }
   },
   { timestamps: true }
