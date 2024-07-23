@@ -24,19 +24,40 @@ export const addCategory = [
 ];
 
 //Get all Category created by a Admin
+import { v4 as uuidv4 } from 'uuid';
+
 export const getAllCategory = async (req, res) => {
   try {
     const categories = await categoryModel.aggregate([
       {
+        $group: {
+          _id: "$categoryTitle",
+          numberOfCourses: { $sum: { $size: { $ifNull: ["$courses", []] } } },
+          numberOfEnrolledStudents: { $sum: { $size: { $ifNull: ["$enrolledStudents", []] } } }
+        }
+      },
+      {
         $project: {
-          categoryTitle: 1,
-          numberOfCourses: { $size: { $ifNull: ["$courses", []] } },
-          numberOfEnrolledStudents: { $size: { $ifNull: ["$enrolledStudents", []] } }
+          _id: 0,
+          categoryTitle: "$_id",
+          numberOfCourses: 1,
+          numberOfEnrolledStudents: 1
         }
       }
     ]);
 
-    res.status(200).send(categories);
+    // Ensure all categories are included in the response
+    const allCategories = ["Beginner", "Amateur", "Intermediate", "Advanced"];
+    const response = allCategories.map(title => {
+      const category = categories.find(c => c.categoryTitle === title);
+      return {
+        categoryTitle: title,
+        numberOfCourses: category ? category.numberOfCourses : 0,
+        numberOfEnrolledStudents: category ? category.numberOfEnrolledStudents : 0
+      };
+    });
+
+    res.status(200).send(response);
   } catch (error) {
     res.status(500).send(error.message);
   }
