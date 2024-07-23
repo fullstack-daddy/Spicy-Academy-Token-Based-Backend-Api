@@ -9,6 +9,14 @@ import multer from "multer";
 import OTP from "../models/OTP.js";
 import bcrypt from "bcrypt";
 import checkPrivilege from "../middleware/checkPrivilege.js";
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: 'djm8kokg4',
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // Set up multer for memory storage
 const upload = multer({
@@ -496,13 +504,23 @@ export const changeProfilePicture = async (req, res) => {
         return res.status(404).json({ message: "User not found" });
       }
 
+      // Upload to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "profile_pictures" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+
+        uploadStream.end(req.file.buffer);
+      });
+
       const updatedUser = await Model.findOneAndUpdate(
         { [idField]: user[idField] },
         {
-          profilePicture: {
-            data: req.file.buffer,
-            contentType: req.file.mimetype,
-          },
+          profilePicture: result.secure_url,
         },
         { new: true, runValidators: true }
       );
@@ -515,6 +533,7 @@ export const changeProfilePicture = async (req, res) => {
 
       res.status(200).json({
         message: "Profile picture updated successfully",
+        profilePicture: result.secure_url
       });
     } catch (error) {
       console.error("Error in changeProfilePicture:", error);
@@ -551,14 +570,13 @@ export const getProfilePicture = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (user.profilePicture && user.profilePicture.data) {
-      res.contentType(user.profilePicture.contentType);
-      res.send(user.profilePicture.data);
+    if (user.profilePicture) {
+      res.status(200).json({ profilePicture: user.profilePicture });
     } else {
-      res.status(404).send("No profile picture found");
+      res.status(404).json({ message: "No profile picture found" });
     }
   } catch (error) {
-    res.status(500).send("Error retrieving profile picture");
+    res.status(500).json({ message: "Error retrieving profile picture" });
   }
 };
 

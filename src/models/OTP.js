@@ -79,7 +79,7 @@ const otpEmailTemplate = (otp) => `
     </div>
     <div class="footer">
         <p>This is an automated message, please do not reply to this email.</p>
-        <p>&copy; 2023 Spicy Guitar Academy. All rights reserved.</p>
+        <p>&copy; 2024 Spicy Guitar Academy. All rights reserved.</p>
     </div>
 </body>
 </html>
