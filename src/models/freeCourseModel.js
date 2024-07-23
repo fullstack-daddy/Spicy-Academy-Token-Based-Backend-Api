@@ -13,6 +13,12 @@ const AddFreeVideoCourseSchema = new mongoose.Schema({
     unique: false,
     trim: true,
   },
+  courseCategory: {
+    type: String,
+    required: true,
+    enum: ["Beginner", "Amateur", "Intermediate", "Advanced"],
+    trim: true,
+  },
   courseOrder: {
     type: Number,
     required: true,
@@ -61,9 +67,6 @@ const AddFreeVideoCourseSchema = new mongoose.Schema({
     type: Buffer,
     required: false,
   },
-  // lessons:{
-  //   ref: 'lessons'
-  // },
   adminId: {
     type: String,
     required: true,

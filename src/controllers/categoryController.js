@@ -1,5 +1,7 @@
 // courseController.js
 import categoryModel from "../models/categoryModel.js";
+import freeCourseModel from "../models/freeCourseModel.js";
+import shopperCourseModel from "../models/shopperCourseModel.js";
 import checkPrivilege from "../middleware/checkPrivilege.js";
 
 // Add category function
@@ -22,20 +24,27 @@ export const addCategory = [
 ];
 
 //Get all Category created by a Admin
-export const getAllAdminCategory = async (req, res) => {
+export const getAllCategory = async (req, res) => {
   try {
-    // Find all free courses created by the authenticated user
-    const getAllCategory = await categoryModel.find({
-      adminId: req.user.adminId,
-    });
+    // Aggregate the data to get the desired output
+    const categories = await categoryModel.aggregate([
+      {
+        $project: {
+          categoryTitle: 1,
+          numberOfCourses: { $size: "$courses" },
+          numberOfEnrolledStudents: { $size: "$enrolledStudents" }
+        }
+      }
+    ]);
 
-    // Respond with the retrieved free courses
-    res.status(200).send(getAllCategory);
+    // Respond with the aggregated data
+    res.status(200).send(categories);
   } catch (error) {
     // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
   }
 };
+
 
 // Update category function
 export const updateCategory = [

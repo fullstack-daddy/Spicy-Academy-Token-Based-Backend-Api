@@ -7,73 +7,27 @@ const CourseCategory = new mongoose.Schema({
     default: uuidv4,
     unique: true,
   },
-  courseTitle: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  courseOrder: {
-    type: Number,
-    required: true,
-  },
-  coursePrice: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  videoLink: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  assignmentQuestion1: {
-    type: String,
-    required: true,
-    unique: false,
-    trim: true,
-  },
-  assignmentQuestion2: {
-    type: String,
-    required: true,
-    unique: false,
-    trim: true,
-  },
-  assignmentQuestion3: {
-    type: String,
-    required: true,
-    unique: false,
-    trim: true,
-  },
-  tablature: {
-    type: Buffer,
-    required: false,
-  },
-  videoThumbnail: {
-    type: Buffer,
-    required: false,
-  },
-  audio: {
-    type: Buffer,
-    required: false,
-  },
-  loop: {
-    type: Buffer,
-    required: false,
-  },
-  category: {
-    type: String,
-    required: true,
-    // default: 'Beginner',
-  },
   adminId: {
     type: String,
     required: true,
+  },
+  categoryTitle: {
+    type: String,
+    default: "Beginner",
+    enum: ["Beginner", "Amateur", "Intermediate", "Advanced"],
+    trim: true,
+  },
+  categoryOrder: {
+    type: Number,
+    required: true,
+  },
+  enrolledStudents: {
+    type: Array,
+    default: [],
+  },
+  courses: {
+    type: Array,
+    default: [],
   },
 });
 
