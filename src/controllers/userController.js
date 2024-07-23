@@ -1,5 +1,3 @@
-// userController.js
-
 import Student from "../models/studentModel.js";
 import Admin from "../models/adminModel.js";
 import pendingAdmin from "../models/pendingAdminModel.js";
