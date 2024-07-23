@@ -302,11 +302,63 @@ export const generatePasswordResetToken = async (req, res) => {
     const resetUrl = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${resetToken}`;
 
     // Create email message
-    const body = `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
-      Please click on the following link, or paste this into your browser to complete the process:\n\n
-      <a href="${resetUrl}">${resetUrl}</a>\n\n
-      This link will expire in 30 minutes.\n\n
-      If you did not request this, please ignore this email and your password will remain unchanged.\n`;
+    const body = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Reset Request</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .container {
+                background-color: #f9f9f9;
+                border-radius: 5px;
+                padding: 20px;
+                margin-top: 20px;
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 15px;
+            }
+            .footer {
+                margin-top: 20px;
+                font-size: 0.9em;
+                color: #666;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Password Reset Request</h2>
+            <p>Hello,</p>
+            <p>We received a request to reset the password for your account. If you didn't make this request, you can safely ignore this email.</p>
+            <p>To reset your password, please click the button below:</p>
+            <a href="${resetUrl}" class="button">Reset Your Password</a>
+            <p>Or copy and paste the following link into your browser:</p>
+            <p>${resetUrl}</p>
+            <p><strong>This link will expire in 30 minutes.</strong></p>
+            <p>If you have any issues or didn't request this password reset, please contact our support team.</p>
+        </div>
+        <div class="footer">
+            <p>This is an automated message, please do not reply to this email.</p>
+            <p>&copy; 2023 Your Company Name. All rights reserved.</p>
+        </div>
+    </body>
+    </html>
+    `;
 
     // Send email
     await mailSender(user.email, 'Password Reset Request', body);
