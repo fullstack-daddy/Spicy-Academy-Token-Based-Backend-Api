@@ -56,6 +56,8 @@ const userSchema = new mongoose.Schema(
       unique: true,
       match: [/^\d{10,15}$/, "Telephone number is invalid"],
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     googleId: {
       type: String,
       unique: false,

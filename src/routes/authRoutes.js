@@ -63,5 +63,3 @@ router.put(
 router.post("/superAdminSignup", superAdminSignup);
 
 export default router;
-
-// https://spicy-academy-token-based-backend-api.onrender.com/onboardPendingAdmin/27c206c2-3df0-4cf3-a3b1-47ffd6389752

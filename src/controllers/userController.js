@@ -4,6 +4,8 @@ import Student from "../models/studentModel.js";
 import Admin from "../models/adminModel.js";
 import pendingAdmin from "../models/pendingAdminModel.js";
 import superAdmin from "../models/superAdminModel.js";
+import crypto from 'crypto';
+import {mailSender} from '../utils/mailSender.js'
 import { formatDate } from "../utils/formatDate.js";
 import multer from "multer";
 import OTP from "../models/OTP.js";
@@ -270,6 +272,83 @@ export const changePassword = async (req, res) => {
       .json({ message: `Error changing password: ${error.message}` });
   }
 };
+
+// generatePasswordResetToken
+export const generatePasswordResetToken = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the user exists (checking in Student, Admin, and superAdmin models)
+    let user = await Student.findOne({ email });
+    if (!user) user = await Admin.findOne({ email });
+    if (!user) user = await superAdmin.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a reset token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Set token expiration (30 minutes from now)
+    const resetTokenExpiration = Date.now() + 1800000; // 30 minutes
+
+    // Save the reset token and expiration to the user document
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetTokenExpiration;
+    await user.save();
+
+    // Create reset URL
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${resetToken}`;
+
+    // Create email message
+    const body = `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
+      Please click on the following link, or paste this into your browser to complete the process:\n\n
+      <a href="${resetUrl}">${resetUrl}</a>\n\n
+      This link will expire in 30 minutes.\n\n
+      If you did not request this, please ignore this email and your password will remain unchanged.\n`;
+
+    // Send email
+    await mailSender(user.email, 'Password Reset Request', body);
+
+    res.status(200).json({ message: 'Password reset email sent' });
+  } catch (error) {
+    console.error('Error in generatePasswordResetToken:', error);
+    res.status(500).json({ message: 'Error processing password reset request' });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { newPassword, confirmNewPassword } = req.body;
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    // Check if the token exists in any of the models
+    let user = await Student.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+    if (!user) user = await Admin.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+    if (!user) user = await superAdmin.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired password reset token' });
+    }
+
+    // Set the new password
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: 'Password has been reset successfully' });
+  } catch (error) {
+    console.error('Error in resetPassword:', error);
+    res.status(500).json({ message: 'Error resetting password' });
+  }
+};
+
 
 // Change name (firstName, lastName, or both)
 export const changeName = async (req, res) => {

@@ -150,3 +150,42 @@ export const getAllReviewedAssignments = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+
+export const addAssignment = [
+  checkPrivilege("Add Assignment"),
+  async (req, res) => {
+    try {
+      const { lessonId } = req.params;
+      const { assignmentTitle, assignmentDescription, dueDate } = req.body;
+
+      // Find the lesson
+      const lesson = await courseLessonModel.findOne({ lessonId: lessonId });
+
+      if (!lesson) {
+        return res.status(404).json({ message: "Lesson not found" });
+      }
+
+      // Create new assignment object
+      const newAssignment = {
+        assignmentTitle,
+        assignmentDescription,
+        dueDate,
+        createdBy: req.user.adminId,
+      };
+
+      // Add the new assignment to the lesson's assignments array
+      lesson.assignments.push(newAssignment);
+
+      // Save the updated lesson
+      await lesson.save();
+
+      res.status(201).json({
+        message: "Assignment added successfully",
+        assignment: newAssignment,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+];

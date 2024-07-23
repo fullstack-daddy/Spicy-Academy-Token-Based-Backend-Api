@@ -14,7 +14,8 @@ import {
   changeEmail,
   getProfilePicture,
   deleteAccount,
- 
+  generatePasswordResetToken,
+  resetPassword,
 } from "../controllers/userController.js";
 // import { refreshToken } from "../middleware/authMiddleware.js";
 
@@ -53,7 +54,7 @@ router.get(
   "/getProfilePicture",
   // refreshToken,
   authMiddleware,
-  roleMiddleware(["student","admin", "superadmin"]),
+  roleMiddleware(["student", "admin", "superadmin"]),
   getProfilePicture
 );
 router.delete(
@@ -67,7 +68,7 @@ router.delete(
   "/deleteAccount",
   // refreshToken,
   authMiddleware,
-  roleMiddleware(["student","admin", "superadmin"]),
+  roleMiddleware(["student", "admin", "superadmin"]),
   deleteAccount
 );
 router.delete(
@@ -81,29 +82,39 @@ router.put(
   "/changePassword",
   // refreshToken,
   authMiddleware,
-  roleMiddleware(["student","admin", "superadmin"]),
+  roleMiddleware(["student", "admin", "superadmin"]),
   changePassword
 );
 router.put(
   "/changeProfilePicture",
   // refreshToken,
   authMiddleware,
-  roleMiddleware(["student","admin", "superadmin"]),
+  roleMiddleware(["student", "admin", "superadmin"]),
   changeProfilePicture
 );
 router.put(
   "/changeName",
   // refreshToken,
   authMiddleware,
-  roleMiddleware(["student","admin", "superadmin"]),
+  roleMiddleware(["student", "admin", "superadmin"]),
   changeName
 );
 router.put(
   "/changeEmail",
   // refreshToken,
   authMiddleware,
-  roleMiddleware(["student","admin", "superadmin"]),
+  roleMiddleware(["student", "admin", "superadmin"]),
   changeEmail
+);
+router.post(
+  "/generatePasswordResetToken",
+  // refreshToken,
+  generatePasswordResetToken
+);
+router.post(
+  "/resetPassword/:token",
+  // refreshToken,
+  resetPassword
 );
 
 export default router;

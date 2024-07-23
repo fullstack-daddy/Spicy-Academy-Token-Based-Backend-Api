@@ -69,6 +69,8 @@ const userSchema = new mongoose.Schema(
       enum: ["onboarded"],
       default: "onboarded",
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     priviledges: {
       type: [String],
       enum: [
@@ -92,6 +94,7 @@ const userSchema = new mongoose.Schema(
         "Delete Lesson",
         "Grade Assignment",
         "Remove Student Account",
+        "Add Assignment",
       ],
       default: ["Create Free Course"],
     },

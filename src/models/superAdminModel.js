@@ -45,6 +45,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "superadmin",
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     googleId: {
       type: String,
       unique: false,
