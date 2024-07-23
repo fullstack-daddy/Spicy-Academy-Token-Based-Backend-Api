@@ -26,25 +26,21 @@ export const addCategory = [
 //Get all Category created by a Admin
 export const getAllCategory = async (req, res) => {
   try {
-    // Aggregate the data to get the desired output
     const categories = await categoryModel.aggregate([
       {
         $project: {
           categoryTitle: 1,
-          numberOfCourses: { $size: "$courses" },
-          numberOfEnrolledStudents: { $size: "$enrolledStudents" }
+          numberOfCourses: { $size: { $ifNull: ["$courses", []] } },
+          numberOfEnrolledStudents: { $size: { $ifNull: ["$enrolledStudents", []] } }
         }
       }
     ]);
 
-    // Respond with the aggregated data
     res.status(200).send(categories);
   } catch (error) {
-    // Handle errors by responding with a 500 status and the error message
     res.status(500).send(error.message);
   }
 };
-
 
 // Update category function
 export const updateCategory = [
